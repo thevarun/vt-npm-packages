@@ -45,7 +45,7 @@ The install scripts handle:
 ### Directory Structure
 
 ```
-npm-torka/
+vt-npm-packages/
 ├── package.json                 # Root workspace config (private)
 ├── vt-claude-workflows/         # @torka/claude-workflows package
 │   ├── commands/                # Slash commands (markdown)
