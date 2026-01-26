@@ -1,0 +1,8 @@
+{
+  "name": "@torka/claude-tools-monorepo",
+  "private": true,
+  "workspaces": [
+    "vt-claude-qol",
+    "vt-claude-workflows"
+  ]
+}

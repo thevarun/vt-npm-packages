@@ -1,0 +1,35 @@
+{
+  "name": "@torka/claude-qol",
+  "version": "0.3.0",
+  "description": "Claude Code quality-of-life improvements: auto-approve hooks, context monitoring, and status line enhancements",
+  "keywords": [
+    "claude-code",
+    "developer-tools",
+    "automation",
+    "hooks",
+    "context-monitor",
+    "auto-approve",
+    "claude",
+    "anthropic"
+  ],
+  "author": "Varun Torka",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node install.js",
+    "preuninstall": "node uninstall.js"
+  },
+  "files": [
+    "hooks",
+    "scripts",
+    "commands",
+    "skills",
+    "examples",
+    ".claude-plugin",
+    "install.js",
+    "uninstall.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

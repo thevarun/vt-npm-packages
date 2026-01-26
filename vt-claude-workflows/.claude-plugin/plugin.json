@@ -1,0 +1,55 @@
+{
+  "name": "@torka/claude-workflows",
+  "version": "0.1.0",
+  "description": "Epic automation, git cleanup, code review agents, and workflow helpers for Claude Code",
+  "commands": [
+    {
+      "name": "implement-epic-with-subagents",
+      "description": "Automate entire epic execution by orchestrating sub-agents to execute all stories sequentially"
+    },
+    {
+      "name": "plan-parallelization",
+      "description": "Analyze epic files to identify which epics can run in parallel using Git worktrees"
+    },
+    {
+      "name": "git-local-cleanup-push-pr",
+      "description": "Analyze local branches, cleanup merged branches, push changes, and create PRs"
+    },
+    {
+      "name": "github-pr-resolve",
+      "description": "Assess open PRs, handle review comments, run CI, and merge"
+    }
+  ],
+  "agents": [
+    {
+      "name": "principal-code-reviewer",
+      "description": "Expert-level code review after completing coding tasks or stories"
+    },
+    {
+      "name": "story-prep-master",
+      "description": "Create, refine, or prepare user stories for development"
+    }
+  ],
+  "skills": [
+    {
+      "name": "agent-creator",
+      "description": "Creates custom Claude Code sub-agents for project tasks"
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "name": "auto_approve_safe",
+        "description": "Auto-approve safe tool usage for solo dev workflows",
+        "script": "auto_approve_safe.py"
+      }
+    ]
+  },
+  "scripts": {
+    "statusLine": {
+      "name": "context-monitor",
+      "description": "Real-time context usage monitoring with visual indicators",
+      "script": "context-monitor.py"
+    }
+  }
+}

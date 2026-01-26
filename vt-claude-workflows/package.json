@@ -1,0 +1,43 @@
+{
+  "name": "@torka/claude-workflows",
+  "version": "0.10.0",
+  "description": "Claude Code workflow helpers: epic automation, git cleanup, agents, and design workflows",
+  "keywords": [
+    "claude-code",
+    "ai-workflows",
+    "developer-tools",
+    "automation",
+    "git-management",
+    "code-review",
+    "claude",
+    "anthropic"
+  ],
+  "author": "Varun Torka",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node install.js",
+    "preuninstall": "node uninstall.js"
+  },
+  "files": [
+    "commands",
+    "agents",
+    "skills",
+    "bmad-workflows",
+    "examples",
+    ".claude-plugin",
+    "install.js",
+    "uninstall.js",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "bmad-method": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "bmad-method": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

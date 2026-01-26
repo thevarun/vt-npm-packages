@@ -1,0 +1,17 @@
+{
+  "name": "@torka/claude-qol",
+  "version": "0.2.0",
+  "description": "Claude Code quality-of-life improvements: auto-approve hooks, context monitoring, and workflow optimization",
+  "commands": [
+    {
+      "name": "optimize-auto-approve-hook",
+      "description": "Analyze auto-approve decisions to identify safe patterns for auto-allowing and validate existing rules"
+    }
+  ],
+  "skills": [
+    {
+      "name": "nash",
+      "description": "Workflow optimization loop that reviews Claude Code session transcripts to extract learnings and improve workflows"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+name: implement-epic-with-subagents
+description: "Automate entire epic execution by orchestrating sub-agents to execute all stories sequentially with minimal human intervention"
+author: "BMad"
+web_bundle: true
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/implement-epic-with-subagents"
+workflow_file: "{installed_path}/workflow.yaml"
+first_step: "{installed_path}/steps/step-01-init.md"
+
+# Input files
+epic_file: "" # User provides or auto-discover
+sprint_status: "{implementation_artifacts}/sprint-status.yaml"
+project_context: "**/project-context.md"
+
+# Output files (legacy - kept for reference, see sidecar_folder below)
+# sidecar_file: "{output_folder}/epic-execution-state.yaml"  # DEPRECATED
+completion_report: "{output_folder}/epic-reports/epic-completion-{epic_name}-{date}.md"
+
+# Agent references
+story_prep_agent: ".claude/agents/story-prep-master.md"
+code_review_agent: ".claude/agents/principal-code-reviewer.md"
+desk_check_agent: ".claude/agents/desk-check-gate.md"
+specialist_agents_folder: ".claude/agents/vt-bmad-dev-agents/"
+fallback_dev_agent: "_bmad/bmm/agents/dev.md"
+
+# Execution configuration
+coverage_threshold: 80
+max_retries: 3
+auto_commit: true
+
+# Git workflow settings
+feature_branch_prefix: "feature/epic-"
+auto_create_branch: true
+base_branch: "main"
+
+# Agent creation settings
+agent_creator_skill: ".claude/skills/agent-creator/SKILL.md"
+specialist_agents_created: []  # Populated by init step
+
+# PR settings
+auto_create_pr: true
+pr_base_branch: "main"
+
+# Retrospective settings
+retrospective_workflow: "_bmad/bmm/workflows/4-implementation/retrospective"
+
+standalone: true
+
+# ═══════════════════════════════════════════
+# WORKTREE CONFIGURATION
+# ═══════════════════════════════════════════
+
+# Worktree mode: "ask" | "always" | "never"
+#   ask    - Prompt user each time (default)
+#   always - Always use worktree, skip prompt
+#   never  - Never use worktree, classic behavior
+worktree_mode: "ask"
+
+# Directory pattern for worktrees (relative to main repo parent)
+# Available variables: {project_name}, {epic_number}, {epic_name_sanitized}
+worktree_directory_pattern: "../{project_name}-epic-{epic_number}-{epic_name_sanitized}"
+
+# Branch pattern for worktree branches
+worktree_branch_pattern: "feature/epic-{epic_number}-{epic_name_sanitized}"
+
+# Dependency installation command (auto-detected if empty)
+# Examples: "npm install", "yarn", "pnpm install", "bun install"
+dependency_command: ""
+
+# ═══════════════════════════════════════════
+# SIDECAR CONFIGURATION
+# ═══════════════════════════════════════════
+
+# Sidecar storage folder (will be gitignored)
+sidecar_folder: "{output_folder}/epic-executions"
+
+# Sidecar file pattern
+sidecar_file_pattern: "epic-{epic_number}-state.yaml"
+
+# ═══════════════════════════════════════════
+# DESK CHECK CONFIGURATION
+# ═══════════════════════════════════════════
+
+# MCP tool preference order (uses probe pattern)
+desk_check_mcp_preference:
+  - "chrome"      # mcp__claude-in-chrome__*
+  - "playwright"  # mcp__playwright__*
+
+# Viewport configuration
+desk_check_viewports:
+  desktop: { width: 1280, height: 720 }
+  mobile: { width: 375, height: 667 }
+
+# Screenshot storage
+screenshots_folder: "{implementation_artifacts}/screenshots"
+
+# Dev server configuration
+dev_server:
+  start_command: ""  # Auto-detect: npm run dev, yarn dev, etc.
+  port: 3000         # Default, will probe common ports if fails
+  health_check_url: "http://localhost:{port}"
+  startup_timeout_ms: 30000
+
+# Test credentials for auth-protected routes
+test_credentials:
+  email: "test@test.com"
+  password: "password"
