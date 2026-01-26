@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a development workspace containing two npm packages under the `@torka` namespace:
+This is a monorepo using npm workspaces, containing two npm packages under the `@torka` namespace:
+
+**Repository**: https://github.com/thevarun/vt-npm-packages
 
 | Package | Description |
 |---------|-------------|
@@ -44,6 +46,7 @@ The install scripts handle:
 
 ```
 npm-torka/
+├── package.json                 # Root workspace config (private)
 ├── vt-claude-workflows/         # @torka/claude-workflows package
 │   ├── commands/                # Slash commands (markdown)
 │   ├── agents/                  # AI agent definitions (markdown)
@@ -75,6 +78,6 @@ npm-torka/
 
 ## Publishing Notes
 
-- **No Git remote**: Neither package has a Git remote configured. Do not attempt push operations.
 - **npm 2FA enabled**: Publishing requires 2FA. Do not run `npm publish` directly—inform the user to run it manually with their OTP code.
 - **Versioning**: Each package has independent semver versioning in its own `package.json`.
+- **Workspaces**: Run `npm install` from root to link packages during development.
