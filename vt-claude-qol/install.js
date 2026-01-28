@@ -197,6 +197,7 @@ function install() {
     'scripts/context-monitor.py',
     'scripts/__pycache__/',
     'commands/optimize-auto-approve-hook.md',
+    'commands/docs-quick-update.md',
     'skills/nash/',
     'auto_approve_safe.decisions.jsonl',
     'auto_approve_safe.decisions.archived.jsonl',

@@ -1,0 +1,14 @@
+# Installed by @torka/claude-workflows
+commands/implement-epic-with-subagents.md
+commands/plan-parallelization.md
+commands/git-local-cleanup-push-pr.md
+commands/github-pr-resolve.md
+commands/dev-story-backend.md
+commands/dev-story-fullstack.md
+commands/dev-story-ui.md
+agents/principal-code-reviewer.md
+agents/story-prep-master.md
+agents/desk-check-gate.md
+skills/agent-creator/
+skills/designer-founder/
+*.backup

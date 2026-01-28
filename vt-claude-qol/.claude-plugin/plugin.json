@@ -6,6 +6,10 @@
     {
       "name": "optimize-auto-approve-hook",
       "description": "Analyze auto-approve decisions to identify safe patterns for auto-allowing and validate existing rules"
+    },
+    {
+      "name": "docs-quick-update",
+      "description": "Detect code changes and suggest targeted documentation updates"
     }
   ],
   "skills": [

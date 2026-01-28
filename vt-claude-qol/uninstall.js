@@ -42,6 +42,7 @@ const INSTALLED_FILES = {
   ],
   commands: [
     'optimize-auto-approve-hook.md',
+    'docs-quick-update.md',
   ],
 };
 
