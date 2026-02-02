@@ -54,9 +54,12 @@ def find_duplicates(patterns: list[str]) -> list[str]:
 
 
 def find_dead_by_split(patterns: list[str]) -> list[str]:
+    """Flag patterns containing literal && or ; outside character classes."""
     dead: list[str] = []
     for pattern in patterns:
-        if "&&" in pattern or ";" in pattern:
+        # Strip character classes [...]  before checking for && / ;
+        stripped = re.sub(r"\[.*?\]", "", pattern)
+        if "&&" in stripped or re.search(r"(?<!\\);", stripped):
             dead.append(pattern)
     return dead
 

@@ -1,11 +1,15 @@
 {
+  "_doc_allow": "Groups: system info, file reading, version checks, git, node/npm/yarn/pnpm, python, rust/go, search/text tools, network (localhost only), filesystem, github CLI, process management, background tasks",
+  "_doc_deny": "Blocks: privilege escalation, destructive rm, system modification, fork bombs, pipe-to-shell, mass kill, xargs rm, netcat, crontab",
+  "_doc_sensitive": "Protects: env files, crypto keys, SSH, cloud credentials, package registry configs, secrets/tokens, Docker/K8s configs",
+
   "allow_patterns": [
     "^(pwd|whoami|date)$",
     "^uname(\\s+-a)?$",
     "^which\\s+\\S+$",
-    "^echo\\s+",
+    "^echo\\s+[^|;&]+$",
 
-    "^(cat|head|tail|wc|less|file|stat|du|df)\\s+",
+    "^(cat|head|tail|wc|less|file|stat|du|df)\\s+[^|;&]+$",
     "^ls(\\s+.*)?$",
     "^tree(\\s+.*)?$",
 
@@ -15,10 +19,13 @@
     "^git\\s+(status|diff|log|show|branch|remote|add|commit|checkout|fetch|pull|push|worktree|merge|rebase|tag|switch|restore|rev-parse|ls-files|check-ignore|update-index|stash\\s+(list|push|pop|drop|apply))(\\s+.*)?$",
     "^git\\s+rm\\s+[^|;&]+$",
     "^git\\s+rev-list\\s+[^|;&]+$",
+    "^git\\s+ls-tree\\s+[^|;&]+\\s*\\|\\s*(grep|head|tail|wc)[^|;&]*$",
+    "^git\\s+commit\\s+-m\\s+\"\\$\\(cat\\s+<<'?EOF'?",
     "^git\\s+stash(\\s+--include-untracked|\\s+--all|\\s+-u|\\s+-a)?(\\s+-m\\s+.*)?$",
 
     "^pnpm\\s+(test|run\\s+(test|lint|typecheck|type-check|check|build|dev|start)|install|i|add|remove)(\\s+.*)?$",
-    "^npm\\s+(test|run\\s+(test|lint|lint:fix|typecheck|type-check|check|check-types|build|dev|dev:next|start)|install|i|ci)(\\s+.*)?$",
+    "^npm\\s+(test|install|i|ci)(\\s+.*)?$",
+    "^npm\\s+run\\s+[\\w:-]+(\\s+[^|;&]*)?(\\s*2>&1)?(\\s*&)?$",
     "^npm\\s+whoami$",
     "^npm\\s+list(\\s+(-g|--global))?(\\s+[\\w@/-]+)?$",
     "^npm\\s+ls(\\s+[\\w@/-]+)*$",
@@ -26,8 +33,8 @@
     "^npm\\s+pack\\s+[\\w@/-]+\\s+--dry-run",
     "^yarn\\s+(test|lint|typecheck|type-check|check|build|dev|start|install|add|remove)(\\s+.*)?$",
     "^npx\\s+(tsc|eslint|prettier|vitest|jest)(\\s+.*)?$",
-    "^npx\\s+tsx\\s+[^|;&]+$",
-    "^npx\\s+shadcn@latest\\s+(add|init)(\\s+[\\w@/-]+)*(\\s+--yes)?$",
+    "^npx\\s+shadcn@latest\\s+(add|init)(\\s+[\\w@/-]+)*(\\s+--yes)?(\\s+2>&1)?$",
+    "^(PORT=\\d+\\s+)?npx\\s+playwright\\s+(test|install)\\b",
 
     "^pytest(\\s+.*)?$",
     "^python(3)?\\s+-m\\s+pytest(\\s+.*)?$",
@@ -42,8 +49,9 @@
     "^cargo\\s+(check|test|clippy|fmt\\s+--check|build)(\\s+.*)?$",
     "^go\\s+(test|vet|fmt|build)(\\s+.*)?$",
 
-    "^(jq|grep|rg|find|fd|ag|awk|cut|tr|diff|comm)\\s+",
-    "^sed\\s+-n\\s+",
+    "^(jq|grep|rg|fd|ag|awk|cut|tr|diff|comm)\\s+[^|;&]+$",
+    "^find\\s+(?!.*-exec)[^|;&]+$",
+    "^sed\\s+-n\\s+[^|;&]+$",
     "^(sort|uniq)(\\s+.*)?$",
 
     "^curl\\s+.*--head",
@@ -52,30 +60,34 @@
     "^(dig|nslookup|host)\\s+",
 
     "^mkdir(\\s+.*)?$",
-    "^touch\\s+",
-    "^(cp|mv)\\s+",
+    "^touch\\s+[^|;&]+$",
+    "^(cp|mv)\\s+[^|;&]+$",
     "^rmdir\\s+[^|;&]+$",
 
     "^gh\\s+(pr|issue|repo|release|workflow|run|api|auth)(\\s+.*)?$",
     "^npm\\s+update\\s+[@\\w/-]+$",
 
-    "^sleep\\s+\\d+$",
+    "^sleep\\s+[0-9.]+$",
 
-    "^chmod\\s+[0-6][0-7][0-7]\\s+",
+    "^chmod\\s+[0-6][0-7][0-7]\\s+[^|;&]+$",
 
     "^lsof\\s+(-[a-zA-Z]+\\s+)*-?i\\s*[:\\d]+",
+    "^lsof\\s+-ti:\\d+(\\s+2>/dev/null)?$",
     "^npm\\s+run\\s+clean(\\s+.*)?$",
     "^npm\\s+(dedupe|cache\\s+clean)(\\s+.*)?$",
-    "^curl\\s+(-[sIo]+\\s+)*https?://localhost[:/][^|;&]*$",
-    "^curl\\s+[^|;&]*http://localhost[:/][^|;&]*$",
-    "^pgrep\\s+",
 
-    "^curl\\s+(-[sXo]+\\s+)*(POST|GET|PUT|DELETE)\\s+['\"]?https?://localhost[:/][^|;&]*$",
+    "^curl\\s+(-[a-zA-Z]+\\s+)*https?://localhost[:/][^|;&]*(\\s*2>&1)?(\\s*2>/dev/null)?$",
+    "^curl\\s+-X\\s+(POST|GET|PUT|DELETE)\\s+['\"]?https?://localhost[:/][^|;&]*$",
     "^curl\\s+-s\\s+-o\\s+/dev/null\\s+-w\\s+[^|;&]*https?://localhost[^|;&]*$",
 
-    "^npm\\s+run\\s+dev\\s*>\\s*/tmp/[^|;&]+\\s*2>&1\\s*&$",
-    "^npm\\s+run\\s+dev\\s+--\\s+-p\\s+\\d+\\s*(&|2>&1\\s*&)$",
-    "^npm\\s+run\\s+dev\\s*>\\s*/dev/null\\s+2>&1\\s*&$"
+    "^pgrep\\s+[^|;&]+$",
+    "^ps\\s+aux.*$",
+
+    "^npm\\s+run\\s+dev(\\s+--\\s+-p\\s+\\d+)?\\s*(>\\s*(/tmp/[^|;&]+|/dev/null)\\s+)?2>&1\\s*&$",
+
+    "^test\\s+-[dfeL]\\s+[^|;&]+$",
+
+    "^xxd\\s+[^|;&]+$"
   ],
 
   "deny_patterns": [
@@ -83,7 +95,8 @@
     "^doas\\b",
     "(?<!git\\s)\\brm\\s+.*(-r|-rf|-fr|--recursive)",
     "(?<!git\\s)\\brm\\s+-[^\\s]*r",
-    "^rm\\s+/",
+    "^rm\\s+/$",
+    "^rm\\s+/(etc|usr|var|bin|sbin|lib|boot|dev|proc|sys|root|home)\\b",
     "\\bmkfs\\.",
     "\\bdd\\b.*\\bof=",
     "\\bshutdown\\b",
@@ -100,13 +113,15 @@
     "\\bfork\\s*bomb",
     "\\bkill\\s+-9\\s+-1",
     "\\bpkill\\s+-9",
-    "\\bkillall\\b"
+    "\\bkillall\\b",
+    "\\bxargs\\b.*\\brm\\b",
+    "\\b(nc|ncat|netcat)\\b",
+    "\\bcrontab\\s+-[er]"
   ],
 
   "sensitive_paths": [
-    "\\.env$",
+    "\\.env(?!\\.example)$",
     "\\.env\\.(?!example)",
-    "\\.env\\.",
     "\\.pem$",
     "\\.key$",
     "\\.crt$",
@@ -128,6 +143,8 @@
     "\\.netrc$",
     "\\bsecrets?\\b",
     "\\bpassw(?:ord)?s?\\.(txt|json|env|yaml|yml|ini|conf|cfg)$",
-    "\\btoken"
+    "\\btokens?\\b",
+    "\\.docker/config\\.json",
+    "\\.kube/config"
   ]
 }
