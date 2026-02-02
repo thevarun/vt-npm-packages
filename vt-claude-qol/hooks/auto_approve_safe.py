@@ -85,7 +85,7 @@ def split_compound_shell_command(command: str) -> list[str]:
     if not command:
         return []
     # Common patterns produced by agents: `cd x && pnpm test`, `cmd1; cmd2`
-    return [p.strip() for p in re.split(r"\s*(?:&&|;)\s*", command) if p.strip()]
+    return [p.strip() for p in re.split(r"\s*(?:&&|;|\|)\s*", command) if p.strip()]
 
 
 def is_shell_file_read_command(command: str) -> bool:
@@ -212,6 +212,8 @@ def make_decision(tool_name: str, tool_input: dict, rules: dict) -> tuple[str, s
 
 def output_decision(decision: str, reason: str) -> None:
     """Output the hook decision in Claude Code's expected format."""
+    if decision == "ask":
+        return  # No output = defer to Claude Code's internal permission system
     output = {
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",
