@@ -194,6 +194,7 @@ function install() {
   const gitignoreEntries = [
     'scripts/auto_approve_safe.py',
     'scripts/auto_approve_safe.rules.json',
+    'scripts/auto_approve_safe_rules_check.py',
     'scripts/context-monitor.py',
     'scripts/__pycache__/',
     'commands/optimize-auto-approve-hook.md',

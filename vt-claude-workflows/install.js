@@ -264,6 +264,7 @@ function install() {
     const bmadOutputGitignorePath = path.join(bmadOutputDir, '.gitignore');
     const bmadOutputEntries = [
       'epic-executions/',
+      'screenshots/',
     ];
     const outputAdded = ensureGitignoreEntries(
       bmadOutputGitignorePath,
