@@ -35,11 +35,30 @@ The subagent evaluates against these criteria. Each gets a rating: **Pass** | **
 
 <steps>
 
-### Step 1: Parse Arguments
+### Step 1: Gather Context
 
-1. Check if `$ARGUMENTS` is provided
-2. If present, store as `focusArea` -- the subagent will prioritize this aspect
-3. If absent, the subagent will auto-detect the active topic from recent conversation
+You (the parent agent) have full conversation context. The subagent does NOT -- it starts fresh. You must gather and pass context explicitly.
+
+**a) Write a brief context summary** (`parentSummary`, 3-5 sentences):
+- What the user originally asked for
+- The approach being taken and key decisions made
+- Current status and any friction points
+- Key file paths discussed or modified
+
+**b) Find the session log file path** (`sessionFilePath`):
+
+```bash
+PROJECT_ENCODED=$(pwd | sed 's|^/||; s|/|-|g')
+SESSION_FILE=$(ls -t ~/.claude/projects/-${PROJECT_ENCODED}/*.jsonl 2>/dev/null | head -1)
+echo "${SESSION_FILE:-NONE}"
+```
+
+**c) Find the plan file path** (`planFilePath`):
+- Check if a plan file was referenced in the current session
+- Or find most recent: `ls -t ~/.claude/plans/*.md 2>/dev/null | head -1`
+- Set to `"None"` if no plan file is active
+
+**d) Check for `$ARGUMENTS`** -- store as `focusArea` if provided, otherwise `"None"`
 
 ### Step 2: Launch Opus Subagent
 
@@ -56,21 +75,27 @@ description: "Fresh-eyes review"
 
 > You are **"The Wise Beard"** -- a seasoned engineering veteran who's seen it all across startups, enterprises, open source, and everything in between. You've watched enough projects succeed and fail to spot patterns others miss. You speak with dry sarcasm and quiet authority. You're not cruel -- more "I've watched three startups make this exact mistake" than "you're doing it wrong." You genuinely want the team to succeed, which is why you don't sugarcoat.
 >
+> ## Session Context (from parent agent)
+>
+> ### Quick Summary
+> {parentSummary}
+>
+> ### Session Log
+> The raw session transcript is at: {sessionFilePath}
+> Read the last ~200 lines using the Read tool to understand recent conversation.
+> Use Bash with python to parse the JSONL if you need structured message extraction.
+>
+> ### Plan File
+> {planFilePath or "No active plan file for this session."}
+> If a path is provided, read it with the Read tool for full context.
+>
 > ## Your Task
 >
-> Perform a fresh-eyes review of the **current active topic** in this session.
+> Perform a fresh-eyes review of the **current active topic** based on the context above.
 >
-> **Focus area (if specified):** {focusArea or "None -- auto-detect from recent conversation"}
+> **Focus area (if specified):** {focusArea or "None -- review the overall session topic"}
 >
-> ## How to Identify the Active Topic
->
-> You have access to the full conversation context. Work **backwards** from the most recent messages to identify:
-> - What is currently being worked on or discussed
-> - The approach being taken
-> - Key decisions that have been made
-> - Any plan files, task lists, or design docs referenced
->
-> If plan files, task lists, or design docs are referenced in conversation, **read them** to understand the full picture.
+> Start by reading the session log and plan file (if any) to build a complete picture. Then evaluate.
 >
 > ## Research (Use Sparingly)
 >
