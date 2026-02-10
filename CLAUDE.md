@@ -47,6 +47,7 @@ The install scripts handle:
 ```
 vt-npm-packages/
 ├── package.json                 # Root workspace config (private)
+├── UPSTREAM_DEPS.yaml           # Dependency manifest (run /update-self)
 ├── vt-claude-workflows/         # @torka/claude-workflows package
 │   ├── commands/                # Slash commands (markdown)
 │   ├── agents/                  # AI agent definitions (markdown)
@@ -93,6 +94,7 @@ Workflows are defined as markdown files with:
 | `/git-local-cleanup-push-pr` | Yes |
 | `/github-pr-resolve` | Yes |
 | `/plan-parallelization` | Yes |
+| `/update-self` | Yes (repo-local, not distributed) |
 | `/agent-creator` skill | Yes |
 | `/designer-founder` skill | Yes |
 | `/implement-epic-with-subagents` | Requires BMAD Method |
@@ -108,3 +110,4 @@ BMAD workflows are installed to `_bmad/bmm/workflows/4-implementation/` (separat
 - **npm 2FA enabled**: Publishing requires 2FA. Do not run `npm publish` directly—inform the user to run it manually with their OTP code.
 - **Versioning**: Each package has independent semver versioning in its own `package.json`.
 - **Workspaces**: Run `npm install` from root to link packages during development.
+- **Pre-publish check**: Run `/update-self` before publishing new package versions to catch stale upstream dependencies.

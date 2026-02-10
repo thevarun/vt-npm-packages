@@ -1,0 +1,145 @@
+schema_version: 1
+last_full_check: "2026-02-10"
+
+dependencies:
+  # ── HIGH RISK ──────────────────────────────────────────────────────────
+
+  - name: "Claude Code API"
+    type: platform
+    risk: high
+    upstream:
+      github: "anthropics/claude-code"
+      url: "https://docs.anthropic.com/en/docs/claude-code"
+    verified:
+      version: "v1.0.31"
+      date: "2026-02-10"
+    surfaces:
+      - "PreToolUse hook JSON schema (stdin payload)"
+      - "Status line script API (stdout format)"
+      - ".claude-plugin/plugin.json manifest format"
+    local_files: []
+
+  - name: "BMAD Method"
+    type: peer-dep
+    risk: high
+    upstream:
+      github: "bmadcode/BMAD-METHOD"
+      npm: "bmad-method"
+      url: "https://github.com/bmadcode/BMAD-METHOD"
+    verified:
+      version: "v1.0.0"
+      date: "2026-02-10"
+    surfaces:
+      - "Workflow file locations (_bmad/bmm/workflows/)"
+      - "Epic/story file format"
+      - "Agent persona definitions"
+    local_files: []
+
+  # ── MEDIUM RISK ────────────────────────────────────────────────────────
+
+  - name: "Stitch MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      github: "google-labs-code/stitch-skills"
+      url: "https://stitch.withgoogle.com/"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "MagicPatterns MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      url: "https://www.magicpatterns.com/"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "Playwright MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      github: "anthropics/claude-code"
+      url: "https://github.com/anthropics/claude-code"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "shadcn MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      url: "https://ui.shadcn.com/"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "Context7 MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      url: "https://context7.com/"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "Serena MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      github: "oramasearch/serena"
+      url: "https://github.com/oramasearch/serena"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "Chrome MCP"
+    type: mcp-tool
+    risk: medium
+    upstream:
+      url: "https://chromewebstore.google.com/"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  # ── LOW RISK ───────────────────────────────────────────────────────────
+
+  - name: "Vercel react-best-practices"
+    type: external-skill
+    risk: low
+    upstream:
+      github: "vercel-labs/agent-skills"
+      url: "https://github.com/vercel-labs/agent-skills"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "Google stitch-skills"
+    type: external-skill
+    risk: low
+    upstream:
+      github: "google-labs-code/stitch-skills"
+      url: "https://github.com/google-labs-code/stitch-skills"
+    verified:
+      version: "latest"
+      date: "2026-02-10"
+    local_files: []
+
+  - name: "Community agent repos"
+    type: reference
+    risk: low
+    upstream:
+      url: "https://github.com/topics/claude-code"
+    verified:
+      version: "n/a"
+      date: "2026-02-10"
+    local_files: []

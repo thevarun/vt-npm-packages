@@ -25,3 +25,6 @@ commands/fresh-eyes.md
 skills/nash/
 auto_approve_safe.decisions.jsonl
 auto_approve_safe.decisions.archived.jsonl
+
+# Repo-local commands (committed to git, not from a package)
+!commands/update-self.md
