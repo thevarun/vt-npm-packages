@@ -300,11 +300,11 @@ Now that UI is visually correct, add tests:
    - Utility functions
    - Location: co-located with component (Component.test.tsx)
 
-3. Run full test suite:
-   npm test
-   npm run test:e2e (if available)
+3. Run targeted tests for the tests you just wrote:
+   npm test -- --filter "{test-file}"
+   (The full suite runs ONCE at Step 11.1 Final Verification after ALL tasks are complete.)
 
-4. Ensure all tests pass before marking task complete
+4. Ensure targeted tests pass before marking task complete
 ```
 
 ---

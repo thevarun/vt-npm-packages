@@ -221,15 +221,22 @@ Options:
 ### 7. Handle Menu Selection
 
 #### IF C (Continue):
-1. Update sidecar:
+1. CRITICAL: Execution log entries in the sidecar are **immutable history**.
+   When updating the sidecar, APPEND new entries to the `execution_log` array -
+   **never replace or truncate** the existing entries. All completed story records
+   must be preserved through session continuations. Use a read-modify-append
+   pattern: read the current execution_log, then add new entries at the end.
+
+2. Update sidecar (APPEND to existing execution_log):
    ```yaml
    execution_log:
+     # ... all existing entries preserved ...
      - event: "session_resumed"
        timestamp: "{current_timestamp}"
        from_phase: "{current_phase}"
    last_updated: "{current_timestamp}"
    ```
-2. Route based on scenario:
+3. Route based on scenario:
    - Scenario A/B → load, read entire file, then execute `{nextStepFile}`
    - Scenario C → load, read entire file, then execute `{completionStepFile}`
 

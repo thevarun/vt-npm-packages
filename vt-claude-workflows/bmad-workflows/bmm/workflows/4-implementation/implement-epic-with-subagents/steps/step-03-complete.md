@@ -332,7 +332,41 @@ Pull Request Created
 - Created: [timestamp]
 ```
 
-### 6.5 Worktree Cleanup (Conditional)
+### 6.5 Manual Testing Recommendations
+
+Generate a concise list of key items the user should manually test:
+
+**Analysis approach:**
+1. For each completed story, identify the primary user-facing feature or change
+2. Prioritize items that involve:
+   - New user flows (registration, form submission, navigation)
+   - API integrations (external services, auth flows)
+   - Visual/UI changes (responsive design, dark mode, new pages)
+   - Data operations (CRUD, search, filtering)
+3. Skip items that are purely internal/infrastructure
+
+**Display format:**
+```
+## Recommended Manual Testing
+
+Before merging, verify these key flows:
+
+1. **[Feature name]** (Story N.M)
+   - [ ] [Specific action to test]
+   - [ ] [Expected result to verify]
+
+2. **[Feature name]** (Story N.M)
+   - [ ] [Specific action to test]
+   - [ ] [Expected result to verify]
+
+Environment: {dev_server config}
+Test credentials: {test_credentials if applicable}
+```
+
+**Purpose:** Complement automated tests with human verification of
+end-to-end user experience before PR merge.
+
+### 6.6 Worktree Cleanup (Conditional)
 
 **Skip this section if:**
 - `execution_mode.type` = "main" (not using worktree)

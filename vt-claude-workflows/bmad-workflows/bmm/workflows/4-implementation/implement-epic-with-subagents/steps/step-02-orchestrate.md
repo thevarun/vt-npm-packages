@@ -67,6 +67,18 @@ To autonomously execute all pending stories in the epic by orchestrating special
 - ✅ You handle failures gracefully with retry or escalation
 - ✅ You output brief progress after each story completion
 
+### Orchestrator Tool Guidance:
+
+As orchestrator, your primary tool is Task (spawning agents). Avoid using Edit or Bash
+on source code files - delegate ALL development work to sub-agents.
+
+When a phase produces issues that need fixing (review rejections, test failures, desk-check
+changes requested), spawn the dev agent again with the fix context rather than editing
+code yourself.
+
+**Reserve direct Edit for:** sidecar files and sprint-status.yaml only.
+**Reserve direct Bash for:** git commands and file existence checks only.
+
 ### Step-Specific Rules:
 
 - 🎯 Execute stories in linear order from pending list
@@ -130,6 +142,11 @@ Task tool:
     story_file: [path to created story]
     blockers: none | [list]
     next_action: proceed | escalate
+
+    # Retrospective (for orchestrator learning)
+    went_well: [what worked smoothly in this phase]
+    challenges: [what was difficult or didn't go well]
+    suggestions: [what could be improved for future stories]
     === END HANDOFF ===
 ```
 
@@ -173,6 +190,10 @@ Task tool:
     Write tests first (red-green-refactor).
     Mark tasks complete as you finish them.
 
+    Test Strategy: Run TARGETED tests (npm test -- --filter "{test-file}")
+    during development. The full test suite runs ONCE at the end of all tasks
+    (Step 8.1 Final Verification). Do NOT run the full suite after each task.
+
     Available MCP Tools (use if available):
     - Serena MCP: Code intelligence for navigation, refactoring
     - Context7 MCP: Documentation lookup
@@ -193,6 +214,11 @@ Task tool:
     blockers: none | [list]
     next_action: proceed | escalate | retry
     error_summary: null | [description]
+
+    # Retrospective (for orchestrator learning)
+    went_well: [what worked smoothly in this phase]
+    challenges: [what was difficult or didn't go well]
+    suggestions: [what could be improved for future stories]
     === END HANDOFF ===
 ```
 
@@ -236,12 +262,50 @@ Task tool:
       screenshots_folder: {screenshotsFolder}/story-N.M/
 
     Perform visual inspection per agent protocol.
+
+    Include these retrospective fields in your handoff:
+    # Retrospective (for orchestrator learning)
+    went_well: [what worked smoothly in this phase]
+    challenges: [what was difficult or didn't go well]
+    suggestions: [what could be improved for future stories]
+
     Output handoff when complete.
 ```
 
 **Parse handoff and route:**
 - `check_status: approved` → Phase D (Code Review)
-- `check_status: changes_requested` → Story already annotated by agent, back to Phase B
+- `check_status: changes_requested` → Spawn the dev agent (Opus) to fix visual issues:
+
+  ```
+  Task tool:
+    subagent_type: "general-purpose"
+    model: "opus"
+    description: "Fix desk-check issues story N.M"
+    prompt: |
+      You are a developer agent fixing visual/desk-check issues.
+      Load and embody: [same specialist agent path used in Phase B]
+
+      Story file: [story_path]
+      IMPORTANT: Re-read the story file FIRST. The desk-check agent may have
+      annotated it with "Desk Check Feedback" or "Desk Check Review" sections
+      containing specific notes and change requests. The dev-story commands
+      (Step 4.2) already have review feedback detection - leverage this.
+
+      Files that were changed: [files_changed from Phase B dev handoff]
+
+      Desk-Check Findings to Fix:
+      [paste the desk-check handoff findings/annotations]
+      Screenshots: [screenshot paths if any]
+
+      Fix all visual issues identified by the desk-check agent.
+      Run targeted tests to verify fixes don't break anything.
+
+      Output handoff using the standard AGENT HANDOFF format.
+  ```
+
+  After fix completes → re-run Phase C (desk check) for verification.
+  Maximum desk-check fix cycles: {maxRetries}
+
 - `check_status: rejected` → Escalate to user with `escalation_reason`
 
 **Pass visual context to Code Review (Phase D):**
@@ -303,12 +367,49 @@ Task tool:
       suggestions: [count]
     summary: [brief summary]
     next_action: proceed | fix_required | escalate
+
+    # Retrospective (for orchestrator learning)
+    went_well: [what worked smoothly in this phase]
+    challenges: [what was difficult or didn't go well]
+    suggestions: [what could be improved for future stories]
     === END HANDOFF ===
 ```
 
 **Parse handoff:**
 - If review_status=approved → proceed to Phase E
-- If review_status=changes_requested → go back to Phase B (with review feedback)
+- If review_status=changes_requested → Spawn the dev agent (Opus) to fix code issues:
+
+  ```
+  Task tool:
+    subagent_type: "general-purpose"
+    model: "opus"
+    description: "Fix review issues story N.M"
+    prompt: |
+      You are a developer agent fixing code review findings.
+      Load and embody: [same specialist agent path used in Phase B]
+
+      Story file: [story_path]
+      IMPORTANT: Re-read the story file FIRST. The code reviewer may have
+      annotated it with "Senior Developer Review (AI)", "Code Review", or
+      "Review Follow-ups (AI)" sections containing specific findings and
+      change requests. The dev-story commands (Step 4.2) already have
+      review feedback detection - leverage this.
+
+      Files that were changed: [files_changed from Phase B dev handoff]
+
+      Code Review Findings to Fix:
+      [paste the review findings from handoff]
+
+      Fix all critical and major findings.
+      Run targeted tests to verify fixes.
+      Run full test suite once after all fixes.
+
+      Output handoff using the standard AGENT HANDOFF format.
+  ```
+
+  After fix completes → re-submit to Phase D (code review) for verification.
+  Maximum review fix cycles: {maxRetries}
+
 - If review_status=rejected → escalate to user
 
 ---
@@ -322,6 +423,11 @@ last_updated: "[timestamp]"
 ```
 
 **Execute git commit:**
+
+Pre-commit hooks run the full test suite. Do NOT run tests separately before committing -
+the hook handles it. If the commit hook fails tests, investigate and fix (spawn dev agent
+if needed), then re-attempt the commit.
+
 ```bash
 git add .
 git commit -m "feat(story-N.M): [story title]

@@ -217,7 +217,9 @@ IF task type is UI:
    - E2E tests for user flows
    - Unit tests for component logic
 
-6. Run test suite and verify all pass
+6. Run targeted tests for affected test files:
+   npm test -- --filter "{test-file}"
+   (The full suite runs ONCE at Step 8.1 Final Verification after ALL tasks are complete.)
 ```
 
 ### 6.3 Backend Task Execution (TDD)
@@ -240,7 +242,9 @@ IF task type is BACKEND:
    - Remove duplication
    - Improve naming
 
-4. Run full test suite and verify all pass
+4. Run targeted tests for affected test files:
+   npm test -- --filter "{test-file}"
+   (The full suite runs ONCE at Step 8.1 Final Verification after ALL tasks are complete.)
 ```
 
 ### 6.4 Track Task Type Counts

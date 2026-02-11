@@ -189,8 +189,8 @@ Dev Agent Record update:
    - Extract functions if needed
    - Ensure consistent style
 
-2. After EACH refactor, run tests:
-   npm test
+2. After EACH refactor, run targeted tests:
+   npm test -- --filter "{test-file}"
 
    - Tests MUST stay green
    - IF tests fail: revert last change, try different approach
@@ -198,19 +198,20 @@ Dev Agent Record update:
 3. Log: "REFACTOR: Code improved, tests still green"
 ```
 
-### 6.4 Verify Full Suite
+### 6.4 Task Completion Check
 
 ```
-1. Run complete test suite:
-   npm test
+IMPORTANT: Do NOT run the full test suite after each individual task.
+The full suite runs ONCE at Step 8.1 (Final Verification) after ALL tasks are complete.
 
-2. Ensure no regressions:
-   - All existing tests pass
-   - New tests pass
+1. Verify targeted tests for this task pass:
+   npm test -- --filter "{test-file}"
 
-3. IF any failures:
+2. IF targeted tests fail:
    - Fix immediately
    - Do not proceed with failing tests
+
+3. Proceed to next task (or Step 7 validation gates)
 ```
 
 ---
@@ -224,8 +225,8 @@ Dev Agent Record update:
 ```
 - [ ] Tests exist for the functionality (written FIRST)
 - [ ] TDD cycle completed (red → green → refactor)
-- [ ] All tests pass 100%
-- [ ] No regressions (full suite passes)
+- [ ] All targeted tests pass 100%
+- [ ] No regressions in targeted tests (full suite verified at Step 8.1)
 - [ ] Acceptance criteria for this task satisfied
 ```
 
