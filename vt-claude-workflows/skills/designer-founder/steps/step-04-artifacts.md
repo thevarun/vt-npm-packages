@@ -1,11 +1,11 @@
-# Step 4: Convert & Create Artifacts
+# Step 4: Create Artifacts
 
 ## MANDATORY EXECUTION RULES (READ FIRST)
 
-- 🛑 NEVER generate artifacts without user approval of content
-- 📖 CRITICAL: Use templates from `{installed_path}/templates/`
-- ✅ ALWAYS create artifacts in the designated output folder
-- 🎯 Goal: Transform design into dev-ready documentation
+- NEVER generate artifacts without user approval of content
+- CRITICAL: Use templates from `{installed_path}/templates/`
+- ALWAYS create artifacts in the designated output folder
+- Goal: Transform design into dev-ready documentation
 
 ---
 
@@ -16,7 +16,8 @@ You should have:
 - `scope`: What was designed
 - `design.tool_used`: Which tool created the design
 - `design.output_location`: Where the design lives
-- `design.needs_conversion`: Whether HTML→React conversion is needed
+- `design.needs_conversion`: Whether HTML->React conversion is needed
+- `theme`: Theme info (if detected in Step 1)
 
 ---
 
@@ -34,7 +35,7 @@ Convert design output to dev-ready artifacts and save to `{planning_artifacts}/u
 
 Load and execute: `{installed_path}/tools/conversion.md`
 
-This handles HTML→React conversion with strategies:
+This handles HTML->React conversion with strategies:
 - Component Mapping (shadcn)
 - MagicPatterns Conversion
 - Hybrid
@@ -68,6 +69,10 @@ artifact_data:
   inspiration_sources: [list]
 ```
 
+**File naming convention:** Detect the project's existing file naming convention by checking existing files in `{planning_artifacts}/`. Use that convention (kebab-case, camelCase, etc.) rather than hardcoding kebab-case.
+
+**Epic prefix:** All UX design files MUST use the `epic-{N}-{feature}-` prefix to enable cross-referencing with epics. Validate this when naming artifact files.
+
 ---
 
 ### 3. Determine Artifacts to Create
@@ -78,15 +83,15 @@ Based on scope and design:
 ARTIFACTS TO GENERATE
 
 Required:
-✓ Design Brief - Overview and decisions
-✓ Component Strategy - What to install and build
+[check] Design Brief - Overview and decisions
+[check] Component Strategy - What to install and build
 
 Conditional:
-{✓/✗} Layouts - {if page/screen design, not just component}
-{✓/✗} User Journeys - {if multi-step flow}
+{check} Layouts - {if page/screen design, not just component}
+{check} User Journeys - {if multi-step flow}
 
 Output folder: {planning_artifacts}/ux-design/
-File prefix: {feature_name_kebab_case}-
+File prefix: epic-{N}-{feature}-
 ```
 
 Confirm with user:
@@ -105,18 +110,18 @@ For each artifact, load template and populate:
 **Template:** `{installed_path}/templates/design-brief.md`
 
 Populate placeholders:
-- `{feature_name}` → Scope item name
-- `{overview_description}` → What was designed and why
-- `{design_decisions}` → Key choices made
-- `{tool_used}` → Design tool
-- `{output_location}` → Prototype location
-- `{visual_direction}` → Style notes
-- `{inspiration_sources}` → References used
-- `{date}` → Current date
+- `{feature_name}` -> Scope item name
+- `{overview_description}` -> What was designed and why
+- `{design_decisions}` -> Key choices made
+- `{tool_used}` -> Design tool
+- `{output_location}` -> Prototype location
+- `{visual_direction}` -> Style notes
+- `{inspiration_sources}` -> References used
+- `{date}` -> Current date
 
 **Tool-specific placeholders:**
 
-- `{tool_specific_notes}` → Generate based on tool used:
+- `{tool_specific_notes}` -> Generate based on tool used:
   - **MagicPatterns:** "React/TypeScript code ready for extraction. Use `read_files` MCP tool to access."
   - **SuperDesign:** "HTML/CSS prototype. Requires conversion to React components."
   - **Stitch (with react-components):** "React/TypeScript components generated via Google's react-components skill. AST-validated, includes hooks extraction and data decoupling."
@@ -124,7 +129,7 @@ Populate placeholders:
   - **Wireframe:** "Structure reference only. Build components from scratch."
   - **Direct:** "Component mapping provided. No visual prototype created."
 
-- `{implementation_source_section}` → When MagicPatterns used:
+- `{implementation_source_section}` -> When MagicPatterns used:
   ```markdown
   | Component | Source URL | Files to Extract |
   |-----------|------------|------------------|
@@ -141,18 +146,77 @@ Populate placeholders:
 **Template:** `{installed_path}/templates/component-strategy.md`
 
 Populate placeholders:
-- `{feature_name}` → Scope item name
-- `{shadcn_components}` → Installation command components
-- `{component_mapping_rows}` → Table rows of element→component mapping
-- `{shadcn_component_details}` → Details for each shadcn component
-- `{custom_component_details}` → Build approach for custom components
-- `{magicpatterns_section}` → URLs and extraction instructions (if used)
-- `{implementation_notes}` → Any special considerations
-- `{date}` → Current date
+- `{feature_name}` -> Scope item name
+- `{shadcn_components}` -> Installation command components
+- `{component_mapping_rows}` -> Table rows of element->component mapping
+- `{shadcn_component_details}` -> Details for each shadcn component
+- `{custom_component_details}` -> Build approach for custom components
+- `{magicpatterns_section}` -> URLs and extraction instructions (if used)
+- `{implementation_notes}` -> Any special considerations
+- `{date}` -> Current date
+
+**Theme integration placeholder (`{theme_integration_section}`):**
+
+When a theme was provided in Step 1, populate with:
+```markdown
+## Theme Integration
+
+### Token File
+Reference: `{theme.tokens_file}`
+
+### CSS Custom Properties Setup
+Add to `globals.css`:
+```css
+@layer base {
+  :root {
+    /* Map from tokens.json HSL values to shadcn CSS variables */
+    --background: {tokens.background};
+    --foreground: {tokens.foreground};
+    --primary: {tokens.primary};
+    --primary-foreground: {tokens.primary-foreground};
+    /* ... map all token values */
+  }
+}
+```
+
+### Token-to-shadcn Mapping
+shadcn components use `hsl(var(--primary))` pattern. Ensure all tokens.json values
+are mapped to the corresponding CSS custom properties in globals.css.
+```
+
+When no theme was provided: Empty string.
+
+**Interaction patterns placeholder (`{interaction_patterns_section}`):**
+
+When designs reference transient/interaction UI patterns, populate with:
+```markdown
+## Interaction Patterns
+
+### Toast/Notification
+- Library: sonner (recommended with shadcn)
+- Setup: `npx shadcn@latest add sonner`
+- Usage: Success confirmations, error alerts, action feedback
+
+### Loading States
+- Skeleton: `npx shadcn@latest add skeleton`
+- Spinner: [custom or library recommendation]
+- Usage: Data fetching, form submission, page transitions
+
+### Error States
+- Inline: Form field validation errors
+- Toast: API/network errors
+- Page-level: 404, 500, empty results
+
+### Empty States
+- Pattern: Centered illustration + message + CTA
+- Usage: No data, first-time use, search with no results
+```
+
+When designs don't reference these patterns: Empty string.
 
 **MagicPatterns-specific placeholders (when `design.tool_used` = magicpatterns):**
 
-- `{magicpatterns_extraction_warning}` → Include this warning block:
+- `{magicpatterns_extraction_warning}` -> Include this warning block:
   ```markdown
   > **CRITICAL: EXTRACT CODE, DO NOT REBUILD**
   >
@@ -161,7 +225,7 @@ Populate placeholders:
   > Only adapt for project patterns (Supabase auth, react-hook-form, etc.)
   ```
 
-- `{extraction_table}` → Generate extraction guide from design registry:
+- `{extraction_table}` -> Generate extraction guide from design registry:
   ```markdown
   | Design | MagicPatterns URL | Primary File | Key Elements |
   |--------|-------------------|--------------|--------------|
@@ -169,7 +233,7 @@ Populate placeholders:
   | Sign Up | [View](url) | SignUpForm.tsx | Multi-step form, password strength |
   ```
 
-- `{what_not_to_do_section}` → Include this section:
+- `{what_not_to_do_section}` -> Include this section:
   ```markdown
   ## What NOT to Do
 
@@ -182,9 +246,9 @@ Populate placeholders:
   ```
 
 **For non-MagicPatterns tools:**
-- `{magicpatterns_extraction_warning}` → Empty string
-- `{extraction_table}` → Empty string or "N/A - Design created with {tool_used}"
-- `{what_not_to_do_section}` → Empty string
+- `{magicpatterns_extraction_warning}` -> Empty string
+- `{extraction_table}` -> Empty string or "N/A - Design created with {tool_used}"
+- `{what_not_to_do_section}` -> Empty string
 
 **Save to:** `{planning_artifacts}/ux-design/{prefix}component-strategy.md`
 
@@ -197,19 +261,19 @@ Populate placeholders:
 Only generate if designing pages/screens (not standalone components).
 
 Populate placeholders:
-- `{feature_name}` → Scope item name
-- `{desktop_layout_ascii}` → Desktop wireframe
-- `{desktop_notes}` → Layout notes
-- `{tablet_layout_ascii}` → Tablet wireframe
-- `{tablet_changes}` → What changes
-- `{mobile_layout_ascii}` → Mobile wireframe
-- `{mobile_changes}` → What changes
-- `{responsive_summary_rows}` → Table of element behavior
-- `{date}` → Current date
+- `{feature_name}` -> Scope item name
+- `{desktop_layout_ascii}` -> Desktop wireframe
+- `{desktop_notes}` -> Layout notes
+- `{tablet_layout_ascii}` -> Tablet wireframe
+- `{tablet_changes}` -> What changes
+- `{mobile_layout_ascii}` -> Mobile wireframe
+- `{mobile_changes}` -> What changes
+- `{responsive_summary_rows}` -> Table of element behavior
+- `{date}` -> Current date
 
 **Implementation note placeholder:**
 
-- `{layout_implementation_note}` → When MagicPatterns used:
+- `{layout_implementation_note}` -> When MagicPatterns used:
   ```markdown
   > **NOTE: Layouts Already Implemented**
   >
@@ -232,20 +296,20 @@ Populate placeholders:
 Only generate if multi-step flow (wizard, checkout, onboarding, etc.).
 
 Populate placeholders:
-- `{feature_name}` → Scope item name
-- `{journey_name}` → Name of the flow
-- `{journey_trigger}` → What starts the journey
-- `{journey_goal}` → What user accomplishes
-- `{mermaid_flowchart}` → Flow diagram in Mermaid syntax
-- `{journey_steps}` → Detailed step descriptions
-- `{alternative_flows}` → Other paths
-- `{edge_cases}` → Edge case handling
-- `{error_states}` → Error handling
-- `{date}` → Current date
+- `{feature_name}` -> Scope item name
+- `{journey_name}` -> Name of the flow
+- `{journey_trigger}` -> What starts the journey
+- `{journey_goal}` -> What user accomplishes
+- `{mermaid_flowchart}` -> Flow diagram in Mermaid syntax
+- `{journey_steps}` -> Detailed step descriptions
+- `{alternative_flows}` -> Other paths
+- `{edge_cases}` -> Edge case handling
+- `{error_states}` -> Error handling
+- `{date}` -> Current date
 
 **Implementation source placeholder:**
 
-- `{journey_implementation_sources}` → Link each journey step to its design source:
+- `{journey_implementation_sources}` -> Link each journey step to its design source:
   ```markdown
   | Step | Design Source | Primary File | Key Feature |
   |------|---------------|--------------|-------------|
@@ -267,15 +331,15 @@ ARTIFACTS CREATED
 Location: {planning_artifacts}/ux-design/
 
 Files:
-✓ {prefix}design-brief.md
-✓ {prefix}component-strategy.md
-{✓ {prefix}layouts.md}
-{✓ {prefix}user-journeys.md}
+[done] {prefix}design-brief.md
+[done] {prefix}component-strategy.md
+{[done] {prefix}layouts.md}
+{[done] {prefix}user-journeys.md}
 
 Options:
 [R] Review - Show artifact contents
 [E] Edit - Make changes to an artifact
-[C] Complete - Finalize workflow
+[C] Continue - Proceed to update product docs
 ```
 
 **If R (Review):**
@@ -288,45 +352,8 @@ Options:
 - Update the file
 - Return to options
 
----
-
-### 6. Workflow Complete
-
-```
-DESIGN WORKFLOW COMPLETE ✓
-
-Summary:
-─────────────────────────────────────
-Mode: {mode}
-Tool: {design.tool_used}
-Prototype: {design.output_location}
-
-Artifacts:
-{list of created files with paths}
-
-Next Steps for Development:
-─────────────────────────────────────
-1. Install components:
-   {install_command}
-
-2. Review component strategy for custom builds
-
-3. Reference layouts during implementation
-
-{If related story exists:}
-This design supports: {story_reference}
-Ready for implementation via /dev-story workflow.
-─────────────────────────────────────
-
-[L] Link to Epics - Update implementation plans with UX references
-[N] New Design - Start another design session
-[D] Done - Exit workflow
-```
-
-**Menu Handlers:**
-- **L**: Load `./step-05-epic-linking.md` to cross-reference designs in epic files
-- **N**: Restart workflow from Step 1
-- **D**: Exit workflow
+**If C (Continue):**
+- Auto-advance to Step 5
 
 ---
 
@@ -359,20 +386,17 @@ Options:
 
 ---
 
-## COLLABORATION MENU
+## SUCCESS CRITERIA
 
-```
-[A] Advanced - Refine artifacts further
-[P] Party Mode - Get dev/PM review of artifacts
-[C] Complete - Finish workflow
-```
+- Design converted to component mapping (if needed)
+- All applicable artifacts created
+- Files saved to correct location with epic-{N}-{feature}- prefix
+- shadcn installation command provided
+- Custom components identified with build approach
+- Theme integration documented (if theme provided)
 
 ---
 
-## SUCCESS CRITERIA
+## NEXT STEP
 
-✅ Design converted to component mapping (if needed)
-✅ All applicable artifacts created
-✅ Files saved to correct location
-✅ shadcn installation command provided
-✅ Custom components identified with build approach
+Auto-advance to `./step-05-epic-linking.md`

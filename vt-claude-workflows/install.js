@@ -392,9 +392,6 @@ async function installStitchSkills(isGlobal) {
   };
 
   try {
-    // Install design-md skill (required for Stitch)
-    execSync(`npx skills add google-labs-code/stitch-skills --skill design-md${globalFlag} -a claude-code -y`, execOptions);
-
     // Install react-components skill (for HTML→React conversion)
     execSync(`npx skills add google-labs-code/stitch-skills --skill react-components${globalFlag} -a claude-code -y`, execOptions);
 

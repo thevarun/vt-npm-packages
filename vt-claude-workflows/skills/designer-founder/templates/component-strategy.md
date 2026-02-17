@@ -14,6 +14,8 @@ npx shadcn@latest add {shadcn_components}
 
 {extraction_table}
 
+{theme_integration_section}
+
 ## Component Mapping
 
 | UI Element | Source | Component | Variant/Props | Notes |
@@ -33,6 +35,8 @@ npx shadcn@latest add {shadcn_components}
 {magicpatterns_section}
 
 {what_not_to_do_section}
+
+{interaction_patterns_section}
 
 ## Implementation Notes
 

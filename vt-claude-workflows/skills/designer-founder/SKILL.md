@@ -33,18 +33,19 @@ You are an expert UI/UX designer and visual design specialist who:
 
 ## WORKFLOW ARCHITECTURE
 
-This uses **micro-file architecture** with 5 core steps:
+This uses **micro-file architecture** with 6 core steps:
 
 | Step | Name | Purpose |
 |------|------|---------|
-| 1 | Context & Mode | Detect project state, select mode (Quick/Production) |
+| 1 | Context & Mode | Detect project state, theme, select mode |
 | 2 | Scope & Inspiration | Define what to design, gather references |
 | 3 | Design | Execute design using selected tool |
-| 4 | Convert & Artifacts | Transform to dev-ready output |
-| 5 | Epic Linking | Connect designs to implementation plans (optional) |
+| 4 | Artifacts | Create dev-ready design documentation |
+| 5 | Update Product Docs | Link to epics, update stories with scope changes |
+| 6 | Validate & Finalize | Consistency check, completion |
 
-**Quick Prototype Mode:** Steps 1 → 3 (skip detailed artifacts)
-**Production Mode:** Steps 1 → 2 → 3 → 4 → 5 (optional) (full flow)
+**Quick Prototype Mode:** Steps 1 -> 3 (skip detailed artifacts)
+**Production Mode:** Steps 1 -> 2 -> 3 -> 4 -> 5 -> 6 (full flow)
 
 ---
 
@@ -74,7 +75,7 @@ shadcn MCP: [check if mcp__shadcn tools available]
 Playwright MCP: [check if mcp__playwright tools available]
 SuperDesign: [check if .superdesign/ folder and instructions exist]
 Stitch MCP: [check if mcp__stitch* or stitch* tools available]
-Stitch Skills: [check if design-md skill installed via `npx skills list`]
+react-components skill: [check if installed via `npx skills list`]
 ```
 
 Adjust tool menus based on availability. Tools marked as unavailable should show "(not configured)" in menus.

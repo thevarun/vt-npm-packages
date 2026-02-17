@@ -56,7 +56,7 @@ Add to your `.claude/settings.local.json`:
 }
 ```
 
-### 2. Configure Status Line (optional)
+### 2. Configure Status Line (recommended)
 
 Add to your `.claude/settings.local.json`:
 
@@ -104,7 +104,7 @@ Auto-run linters and formatters after file edits:
 - Rust: rustfmt
 - PHP: php-cs-fixer
 
-### 4. Completion Notifications (optional)
+### 4. Completion Notifications (recommended)
 
 Get notified when Claude Code finishes a task:
 

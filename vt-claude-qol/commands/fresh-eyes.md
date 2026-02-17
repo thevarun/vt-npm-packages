@@ -60,6 +60,11 @@ echo "${SESSION_FILE:-NONE}"
 
 **d) Check for `$ARGUMENTS`** -- store as `focusArea` if provided, otherwise `"None"`
 
+**e) Detect session phase** (`sessionPhase`):
+- If a plan file exists AND no code edits have been made yet → `"planning"`
+- If code edits (Edit/Write tool calls) are visible in recent context → `"implementation"`
+- Default → `"mid-session"`
+
 ### Step 2: Launch Opus Subagent
 
 Launch a single Opus subagent using the Task tool with the following configuration:
@@ -95,16 +100,21 @@ description: "Fresh-eyes review"
 >
 > **Focus area (if specified):** {focusArea or "None -- review the overall session topic"}
 >
+> **Session phase:** {sessionPhase}
+> - During **planning**: Focus on design decisions, approach validation, missing requirements
+> - During **implementation**: Focus on code quality, missed edge cases, scope creep
+> - During **mid-session**: Balance both perspectives
+>
 > Start by reading the session log and plan file (if any) to build a complete picture. Then evaluate.
 >
-> ## Research (Use Sparingly)
+> ## Research
 >
-> You may use **WebSearch** to:
-> - Validate technical claims or assumptions being made
-> - Check if a better, well-established approach exists for the problem
-> - Look up known issues or pitfalls with a proposed solution
+> Use **WebSearch** for at least one of these (pick the most valuable):
+> - Validate the core technical approach against current best practices
+> - Check if there's a well-known library/pattern that solves the same problem
+> - Look up known pitfalls with the specific technology being used
 >
-> Only search when it genuinely adds value. Do not search as busywork.
+> Skip only if the topic is purely project-internal with no external dependencies.
 >
 > ## Review Criteria
 >
@@ -120,16 +130,15 @@ description: "Fresh-eyes review"
 >
 > ## Output Format
 >
+> Lead with what needs attention. Don't restate what the user already knows about their own work.
+>
 > Structure your review EXACTLY as follows:
 >
 > ```
 > # Fresh Eyes Review
 >
 > ## Topic Summary
-> [1-3 sentences: what's being worked on and the current approach]
->
-> ## Intent Check
-> [1-2 sentences: is the work aligned with what was originally asked?]
+> [3 sentence max: what's being worked on]
 >
 > ## Criteria Assessment
 >
@@ -169,6 +178,14 @@ Fresh Eyes review could not be completed. The subagent returned no output.
 Try running `/fresh-eyes` again, or provide a focus area: `/fresh-eyes "the specific topic"`
 ```
 
+### After Presenting the Review
+
+**STOP.** Your job is done. Do NOT:
+- Offer to implement any recommendations
+- Call Edit, Write, or Bash tools to fix issues
+
+The user will decide what to do next. Wait for their explicit instruction.
+
 </steps>
 
 ---
@@ -179,4 +196,4 @@ Try running `/fresh-eyes` again, or provide a focus area: `/fresh-eyes "the spec
 
 1. **Read-only review** -- The subagent must NOT create, edit, or delete any files
 2. **Verbatim output** -- Present the subagent's review exactly as returned, no editorializing
-3. **No auto-remediation** -- This command identifies issues, it does not fix them
+3. **No auto-remediation** -- After presenting the review, the parent agent must NOT offer to fix issues, call Edit/Write/Bash, or ask "would you like me to fix these?" -- wait for the user's explicit instruction

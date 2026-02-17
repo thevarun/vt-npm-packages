@@ -2,10 +2,10 @@
 
 ## MANDATORY EXECUTION RULES (READ FIRST)
 
-- 🛑 NEVER proceed without user confirmation at each design iteration
-- 📖 CRITICAL: Load the appropriate tool file for detailed execution
-- ✅ ALWAYS show design results for review before moving on
-- 🎯 Goal: Create visual prototype using user's preferred tool
+- NEVER proceed without user confirmation at each design iteration
+- CRITICAL: Load the appropriate tool file for detailed execution
+- ALWAYS show design results for review before moving on
+- Goal: Create visual prototype using user's preferred tool
 
 ---
 
@@ -17,6 +17,7 @@ You should have:
 - `scope`: Specific items to design (if production mode)
 - `inspiration`: Visual references (if gathered)
 - `tools_available`: Which tools are configured
+- `theme`: Theme info (if detected in Step 1)
 
 ---
 
@@ -38,25 +39,25 @@ DESIGN TOOL SELECTION
 Choose your design approach:
 
 [S] SuperDesign
-    → Quick HTML/CSS prototypes via VS Code
-    → Best for: Rapid visual exploration, custom styling
+    -> Quick HTML/CSS prototypes via VS Code
+    -> Best for: Rapid visual exploration, custom styling
 
 [T] Stitch (Google AI Design) {show availability status}
-    → AI-generated complete page designs
-    → Best for: Full page layouts, design system consistency
-    → Requires: Stitch MCP + Google's stitch-skills installed
+    -> AI-generated complete page designs
+    -> Best for: Full page layouts, design system consistency
+    -> Requires: Stitch MCP configured
 
 [M] MagicPatterns {show availability status}
-    → AI-generated React components
-    → Best for: Direct React code, component variations
+    -> AI-generated React components
+    -> Best for: Direct React code, component variations
 
 [W] Wireframe Only
-    → ASCII or Excalidraw sketch
-    → Best for: Structure-first, discussing layout
+    -> ASCII or Excalidraw sketch
+    -> Best for: Structure-first, discussing layout
 
 [D] Direct to Components
-    → Skip visuals, map directly to shadcn
-    → Best for: Standard patterns, known layouts
+    -> Skip visuals, map directly to shadcn
+    -> Best for: Standard patterns, known layouts
 
 Which approach? [S/T/M/W/D]
 ```
@@ -81,6 +82,7 @@ Pass context to tool execution:
 - `user_intent`
 - `scope` (if available)
 - `inspiration` (if gathered)
+- `theme` (if detected in Step 1)
 
 ---
 
@@ -93,28 +95,7 @@ Execute the loaded tool file completely:
 
 ---
 
-### 4. Offer Playwright Verification (Optional)
-
-If Playwright MCP is available AND user created a visual prototype (SuperDesign or MagicPatterns):
-
-```
-VISUAL VERIFICATION (Optional)
-
-Would you like me to capture screenshots of your design?
-
-[Y] Yes - Take screenshots (desktop + mobile)
-[N] No - Skip verification
-```
-
-If Y:
-- Use Playwright to navigate to design
-- Capture desktop screenshot
-- Resize viewport (375px width) and capture mobile screenshot
-- Present screenshots for review
-
----
-
-### 5. Confirm Design Completion
+### 4. Confirm Design Completion
 
 After tool execution completes:
 
@@ -124,6 +105,12 @@ DESIGN COMPLETE
 Tool used: {design.tool_used}
 Output: {design.output_location}
 ```
+
+Direct user to review designs on the tool's platform:
+- **MagicPatterns:** Review at the MagicPatterns URL
+- **Stitch:** Review on the Stitch platform
+- **SuperDesign:** Review in VS Code / browser
+- **Wireframe/Direct:** Review inline
 
 **If Quick Prototype mode:**
 ```
@@ -140,7 +127,7 @@ Ready to create dev handover artifacts.
 
 ---
 
-### 5.5 Validate All Designs (Before Step 4)
+### 5. Validate All Designs (Before Step 4)
 
 **When scope has multiple items**, validate coverage before proceeding to artifacts:
 
@@ -149,10 +136,9 @@ DESIGN VALIDATION
 
 Checking scope coverage:
 {foreach scope_item}
-[✓/✗] {item_name}: {url_or_missing}
+[done/missing] {item_name}: {url_or_missing}
 {/foreach}
 
-─────────────────────────────────────
 Coverage: {completed_count} of {total_count} scope items
 ```
 
@@ -189,23 +175,10 @@ Options:
 
 **If all items covered:**
 ```
-VALIDATION PASSED ✓
+VALIDATION PASSED
 
 All {total_count} scope items have approved designs.
 Ready for artifact generation.
-
-[C] Continue to artifacts
-[R] Review designs before continuing
-```
-
----
-
-## COLLABORATION MENU
-
-```
-[A] Advanced - Explore design alternatives
-[P] Party Mode - Get feedback from multiple perspectives
-[C] Continue - Proceed to next step
 ```
 
 ---
@@ -216,7 +189,7 @@ Should have from tool execution:
 
 ```yaml
 design:
-  tool_used: [superdesign | magicpatterns | wireframe | direct]
+  tool_used: [superdesign | stitch | magicpatterns | wireframe | direct]
   output_location: "{path or URL}"
   output_format: [html | react | ascii | mapping]
   needs_conversion: [true | false]
@@ -229,6 +202,4 @@ design:
 
 - If `mode` = `quick_prototype` AND user selects [D]: End workflow
 - If `mode` = `quick_prototype` AND user selects [P]: Load `./step-04-artifacts.md`
-- If `mode` = `production` AND user selects [C]: Load `./step-04-artifacts.md`
-
-Remember: Do NOT proceed until user explicitly confirms.
+- If `mode` = `production`: Load `./step-04-artifacts.md`

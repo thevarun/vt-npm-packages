@@ -2,10 +2,10 @@
 
 ## MANDATORY EXECUTION RULES (READ FIRST)
 
-- 🛑 NEVER proceed without clear scope confirmation
-- 📖 CRITICAL: Pull relevant context from existing artifacts
-- ✅ ALWAYS confirm scope before design phase
-- 🎯 Goal: Define exactly what to design and gather visual references
+- NEVER proceed without clear scope confirmation
+- CRITICAL: Pull relevant context from existing artifacts
+- ALWAYS confirm scope before design phase
+- Goal: Define exactly what to design and gather visual references
 
 ---
 
@@ -16,6 +16,7 @@ You should have:
 - `user_intent`: What user wants to design
 - `project_state`: greenfield or existing
 - `related_artifacts`: List of relevant files
+- `theme`: Theme info (if detected in Step 1)
 
 ---
 
@@ -126,7 +127,6 @@ Would you like to gather visual references before designing?
 
 **If U (user has URLs):**
 - Accept user's reference URLs
-- If Playwright available, offer to screenshot them
 - Note key elements to incorporate
 
 **If N:**
@@ -155,21 +155,6 @@ Ready to proceed to design phase.
 
 ---
 
-## COLLABORATION MENU
-
-```
-[A] Advanced - Deeper exploration of requirements
-[P] Party Mode - Get perspectives from PM, Dev, UX agents
-[C] Continue - Proceed to design phase
-```
-
-**Menu Handlers:**
-- **A**: Explore requirements more deeply, ask clarifying questions
-- **P**: Load party mode for multi-agent input on design direction
-- **C**: Proceed to Step 3
-
----
-
 ## STATE TO CARRY FORWARD
 
 Add to working memory:
@@ -193,6 +178,4 @@ design_direction: "[summary of approach]"
 
 ## NEXT STEP
 
-When user selects [C], load `./step-03-design.md`
-
-Remember: Do NOT proceed until user explicitly selects [C]
+Proceed to `./step-03-design.md`

@@ -1,11 +1,11 @@
-# Step 5: Epic Linking
+# Step 5: Update Product Artifacts
 
 ## MANDATORY EXECUTION RULES (READ FIRST)
 
-- 🛑 NEVER modify epic files without user approval
-- 📖 CRITICAL: Preview all changes before applying
-- ✅ ALWAYS preserve existing epic content (targeted edits only)
-- 🎯 Goal: Cross-reference UX designs in implementation plans
+- NEVER modify epic files without user approval
+- CRITICAL: Preview all changes before applying
+- ALWAYS preserve existing epic content (targeted edits only)
+- Goal: Cross-reference UX designs in implementation plans and backport scope changes
 
 ---
 
@@ -14,15 +14,17 @@
 You should have from Step 4:
 - `artifact_data.feature_name`: What was designed
 - `artifact_data.date`: Current date
-- `design.tool_used`: Which tool created the design (magicpatterns, superdesign, wireframe, direct)
+- `design.tool_used`: Which tool created the design (magicpatterns, superdesign, stitch, wireframe, direct)
 - `design.output_location`: Where the design lives (URL or folder path)
 - Files created in `{planning_artifacts}/ux-design/` with prefix like `epic-3-onboarding-*`
+- `theme`: Theme info (if used)
 
 ---
 
 ## YOUR TASK
 
-Connect UX design artifacts to epic files so developers can find designs during implementation.
+1. Connect UX design artifacts to epic files so developers can find designs during implementation.
+2. Backport any scope changes discovered during design to upstream product docs.
 
 ---
 
@@ -30,13 +32,12 @@ Connect UX design artifacts to epic files so developers can find designs during 
 
 ### 1. Detect Related Epics
 
-Extract epic number from artifact prefix:
+Auto-detect related epics from artifact prefix:
 
 **Pattern:** `{prefix}design-brief.md` where prefix = `epic-{N}-{feature-name}-`
 
 ```
 SCANNING FOR RELATED EPICS
-─────────────────────────────────────
 
 Artifact prefix: {prefix}
 Detected epic: Epic {N}
@@ -45,7 +46,7 @@ Searching: {planning_artifacts}/epics/
 ```
 
 **Search logic:**
-1. Parse artifact filename prefix (e.g., `epic-3-onboarding-` → Epic 3)
+1. Parse artifact filename prefix (e.g., `epic-3-onboarding-` -> Epic 3)
 2. Find epic file: `epic-{N}-*.md` in `{planning_artifacts}/epics/`
 3. If multiple matches, list all and ask user to select
 
@@ -80,7 +81,6 @@ epic_analysis:
 **Report to user:**
 ```
 EPIC ANALYSIS
-─────────────────────────────────────
 
 Found: {Epic N: Title}
 Location: {epic_file_path}
@@ -150,6 +150,13 @@ For each story, determine if there's a matching design:
 - **Components:** shadcn `Button`, custom `FeatureCard`
 ```
 
+**Stitch:**
+```markdown
+**UX Design:**
+- **Prototype:** [Screen Title]({stitch_project_url})
+- **Components:** shadcn `Card`, custom `DashboardLayout`
+```
+
 **Direct Mapping (shadcn research):**
 ```markdown
 **UX Design:**
@@ -166,13 +173,46 @@ For each story, determine if there's a matching design:
 
 ---
 
-### 5. Preview Changes
+### 5. Upstream Doc Updates
+
+Check if the design process revealed scope changes that should be backported:
+
+**Look for:**
+- New screens/pages that weren't in original epics
+- Modified user flows (steps added/removed/reordered)
+- Dropped features (designed but determined unnecessary)
+- New components or patterns not anticipated in stories
+
+**If scope changes detected:**
+```
+SCOPE CHANGES FROM DESIGN
+
+The design process revealed these differences from current specs:
+
+Added:
++ {new screen/flow/component} - Not in current epics
+
+Modified:
+~ {changed flow} - Original: {old}, Design: {new}
+
+Dropped:
+- {removed feature} - Determined unnecessary during design
+
+Should I update the epic/stories to reflect these changes?
+[Y] Yes - Update upstream docs
+[N] No - Keep epics as-is (design artifacts document the changes)
+```
+
+**If Y:** Apply targeted edits to epic/story files to reflect design decisions.
+
+---
+
+### 6. Preview Changes
 
 Present all changes before applying:
 
 ```
 PROPOSED CHANGES
-─────────────────────────────────────
 
 Epic: {Epic N: Title}
 File: {epic_file_path}
@@ -184,31 +224,28 @@ EPIC-LEVEL (after Goal line):
 + - [User Journeys](../ux-design/{prefix}user-journeys.md)
 
 STORY-LEVEL:
-○ Story {N.1}: {title}
+o Story {N.1}: {title}
   + **UX Design:**
   + - **Prototype:** [{title}]({url})
   + - **Components:** `Component.tsx`
 
-○ Story {N.2}: {title}
+o Story {N.2}: {title}
   (no matching design found - skipping)
 
-○ Story {N.3}: {title}
+o Story {N.3}: {title}
   + **UX Design:**
   + - **Prototype:** [{title}]({url})
   + - **Components:** shadcn `Select`, `Preferences.tsx`
 
-─────────────────────────────────────
-
 Options:
 [A] Apply all - Add all UX references
-[E] Epic only - Only add epic-level section
 [S] Select - Choose which stories to update
 [X] Cancel - Return without changes
 ```
 
 ---
 
-### 6. Apply Changes
+### 7. Apply Changes
 
 **If user approves:**
 
@@ -219,7 +256,7 @@ Execute targeted edits:
    - Insert after match: UX Design Artifacts section + blank line
 
 2. **Story-level:** Insert after `**Acceptance Criteria:**` section, before `---`
-   - Find: Story heading → Acceptance Criteria → last criterion line
+   - Find: Story heading -> Acceptance Criteria -> last criterion line
    - Insert before `---`: UX Design section + blank line
 
 **Use Edit tool for each change:**
@@ -232,35 +269,19 @@ Editing: {epic_file_path}
 
 **After all edits:**
 ```
-EPIC LINKING COMPLETE ✓
+PRODUCT DOCS UPDATED
 
 Updated: {epic_file_path}
 
 Changes made:
-✓ Epic-level UX Design Artifacts section
-✓ Story {N.1} UX Design reference
-✓ Story {N.3} UX Design reference
+[done] Epic-level UX Design Artifacts section
+[done] Story {N.1} UX Design reference
+[done] Story {N.3} UX Design reference
+{[done] Upstream scope changes applied}
 
 Stories skipped (no matching design):
 - Story {N.2}
 ```
-
----
-
-### 7. Return to Completion Menu
-
-```
-─────────────────────────────────────
-
-[L] Link more - Link to additional epics
-[N] New Design - Start another design session
-[D] Done - Exit workflow
-```
-
-**Menu Handlers:**
-- **L**: Restart from Section 1 (epic detection)
-- **N**: Load `./step-01-context.md`
-- **D**: Exit workflow
 
 ---
 
@@ -289,14 +310,14 @@ Options:
 
 **If C:**
 - Display formatted markdown sections for user to copy
-- Return to completion menu
+- Proceed to Step 6
 
 ### Epic Already Has Complete UX Section
 
 ```
 Epic {N} already has UX Design references:
 
-Epic-level: ✓ Present
+Epic-level: Present
 Stories with UX: 5/5
 
 Options:
@@ -324,14 +345,13 @@ When design doesn't map cleanly to stories:
 
 ```
 DESIGN-TO-STORY MAPPING
-─────────────────────────────────────
 
 Design: {feature_name}
 Stories in Epic {N}: 7
 
 Auto-matched:
-✓ Story 3.1 → Onboarding Step 1 design
-✓ Story 3.3 → Preferences design
+[done] Story 3.1 -> Onboarding Step 1 design
+[done] Story 3.3 -> Preferences design
 
 Unmatched stories (manual mapping needed):
 ? Story 3.2 - Feature Tour
@@ -356,15 +376,23 @@ linking_result:
   epic_level_added: true
   stories_linked: ["3.1", "3.3", "3.5"]
   stories_skipped: ["3.2", "3.4"]
+  upstream_changes_applied: true/false
 ```
 
 ---
 
 ## SUCCESS CRITERIA
 
-✅ Related epic file identified (or user provided path)
-✅ Changes previewed before applying
-✅ Epic-level UX Design Artifacts section added
-✅ Story-level UX Design sections added where applicable
-✅ Existing epic content preserved
-✅ Relative paths correct (`../ux-design/...`)
+- Related epic file identified (or user provided path)
+- Changes previewed before applying
+- Epic-level UX Design Artifacts section added
+- Story-level UX Design sections added where applicable
+- Existing epic content preserved
+- Relative paths correct (`../ux-design/...`)
+- Upstream scope changes backported (if any)
+
+---
+
+## NEXT STEP
+
+Auto-advance to `./step-06-validate.md`
