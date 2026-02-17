@@ -268,6 +268,7 @@ def make_decision(tool_name: str, tool_input: dict, rules: dict) -> tuple[str, s
             r"^export\s+[A-Za-z_][A-Za-z0-9_]*=.*$",
             r"^[A-Za-z_][A-Za-z0-9_]*=.*$",  # bare var assignment
             r"^(true|false)$",
+            r"^#.*$",  # shell comments
         ]
 
         for seg in segments:

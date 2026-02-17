@@ -30,13 +30,19 @@ This command performs a comprehensive analysis of the auto-approve hook's decisi
 
 ### Phase 0: Pre-flight Checks
 
-1. **Read the decision log** at `.claude/auto_approve_safe.decisions.jsonl`
-   - If missing or empty: Stop with message "No decision log found. Run some operations first to generate decisions."
+1. **Check hook configuration** by reading `.claude/settings.json` (project) or `~/.claude/settings.json` (global).
+   - Look for `auto_approve_safe.py` in the hooks configuration
+   - If not found: Stop with message "Hook not configured in settings.json. Install @torka/claude-qol and configure the PreToolUse hook first."
 
-2. **Read the rules file** at `.claude/scripts/auto_approve_safe.rules.json`
+2. **Read the decision log** at `.claude/auto_approve_safe.decisions.jsonl`
+   - If missing or empty: Stop with message "No decision log found. Run some operations first to generate decisions."
+   - For large files (>2000 lines), use Read tool with offset/limit to process in chunks
+
+3. **THEN read the rules file** at `.claude/scripts/auto_approve_safe.rules.json`
+   - Read this AFTER the decision log (sequential, not parallel) to avoid cascade failures
    - If missing: Warn but continue (will create recommendations only)
 
-3. **Display summary to user:**
+4. **Display summary to user:**
    ```
    Decision Log Summary
    ====================
@@ -57,6 +63,11 @@ This command performs a comprehensive analysis of the auto-approve hook's decisi
    ```
 
 ### Phase 1: Parse and Categorize
+
+**IMPORTANT**: Parse the decision log using the Read tool and your own reasoning.
+Do NOT use `python3 -c` or bash commands to parse JSONL — these trigger the
+auto-approve hook and cause self-referential ASK prompts. Each line of the JSONL
+file is a standalone JSON object that you can parse directly from the Read output.
 
 Parse all JSONL entries and group by decision type:
 
@@ -190,6 +201,15 @@ AUTO-ALLOW CANDIDATES
 
 ### Phase 5: Present Consolidated Recommendations
 
+**Deny Shadowing Check**
+
+Before presenting allow pattern recommendations, test each proposed pattern against
+all existing deny_patterns. If a deny pattern would match the same commands:
+
+- Flag the conflict: "Warning: This pattern would be shadowed by deny pattern: {deny_regex}"
+- Either: drop the recommendation, OR suggest a deny pattern carve-out if safe
+- Never recommend an allow pattern that would be entirely blocked by deny
+
 First, display the splitter fix impact (from pre-filtered entries in Phase 4):
 
 ```
@@ -294,10 +314,9 @@ echo "" > .claude/auto_approve_safe.decisions.jsonl
 ```
 
 **Delete:**
-```bash
-rm .claude/auto_approve_safe.decisions.jsonl
-# Hook will recreate on next decision
-```
+Use the Write tool to write an empty string to `.claude/auto_approve_safe.decisions.jsonl`.
+This clears the log without triggering the auto-approve hook.
+Do NOT use `rm` — it triggers ASK for paths containing `/`.
 
 **Keep:**
 - No action taken
