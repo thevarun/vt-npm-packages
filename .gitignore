@@ -12,9 +12,15 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Python
+__pycache__/
+
 # Logs
 *.log
 npm-debug.log*
+
+# Auto-approve hook runtime logs
+*.decisions.jsonl
 
 # Test artifacts
 coverage/
