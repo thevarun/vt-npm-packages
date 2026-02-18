@@ -31,3 +31,7 @@ auto_approve_safe.decisions.archived.jsonl
 
 # Installed by @torka/claude-workflows
 skills/product-architect/
+
+# Installed by @torka/claude-workflows
+commands/deep-audit.md
+skills/deep-audit/
