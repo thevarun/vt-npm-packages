@@ -215,6 +215,8 @@ function install() {
     'skills/agent-creator/',
     'skills/designer-founder/',
     'skills/product-architect/',
+    'commands/deep-audit.md',
+    'skills/deep-audit/',
     '*.backup',
   ];
   const addedCount = ensureGitignoreEntries(

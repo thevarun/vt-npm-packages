@@ -18,6 +18,10 @@
     {
       "name": "github-pr-resolve",
       "description": "Assess open PRs, handle review comments, run CI, and merge"
+    },
+    {
+      "name": "deep-audit",
+      "description": "Multi-agent codebase audit across security, architecture, error handling, and more"
     }
   ],
   "agents": [
@@ -38,6 +42,10 @@
     {
       "name": "product-architect",
       "description": "Agent team that creates PRD + Architecture from product notes. PM and Architect collaborate, escalating only for key decisions."
+    },
+    {
+      "name": "deep-audit",
+      "description": "Agent prompts and templates for the deep-audit codebase audit"
     }
   ],
   "hooks": {

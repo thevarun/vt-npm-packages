@@ -43,6 +43,7 @@ const INSTALLED_FILES = {
     'dev-story-backend.md',
     'dev-story-fullstack.md',
     'dev-story-ui.md',
+    'deep-audit.md',
   ],
   agents: [
     'principal-code-reviewer.md',
@@ -102,6 +103,24 @@ const INSTALLED_FILES = {
   'skills/designer-founder/tools/superdesign-assets': [
     'generate-theme.ts',
     'superdesign-agent-instructions.md',
+  ],
+  'skills/deep-audit': [
+    'SKILL.md',
+    'INSPIRATIONS.md',
+  ],
+  'skills/deep-audit/agents': [
+    'security-and-error-handling.md',
+    'architecture-and-complexity.md',
+    'code-health.md',
+    'performance-profiler.md',
+    'test-coverage-analyst.md',
+    'type-design-analyzer.md',
+    'data-layer-reviewer.md',
+    'api-contract-reviewer.md',
+    'seo-accessibility-auditor.md',
+  ],
+  'skills/deep-audit/templates': [
+    'report-template.md',
   ],
 };
 
@@ -279,6 +298,9 @@ function uninstall() {
     'skills/product-architect',
     'skills/agent-creator/expertise',
     'skills/agent-creator',
+    'skills/deep-audit/templates',
+    'skills/deep-audit/agents',
+    'skills/deep-audit',
   ];
   for (const skillSubDir of skillDirs) {
     const dirPath = path.join(targetBase, skillSubDir);
