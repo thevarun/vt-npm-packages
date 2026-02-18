@@ -33,7 +33,7 @@ Before any operations, verify the environment is safe:
    - If output is non-empty, WARN the user but continue
 
 8. **Initialize tracking**:
-   - Create counters: merged=0, skipped=0, failed=0, auto_fixed=0
+   - Create counters: merged=0, skipped=0, failed=0, auto_fixed_lint=0, review_comments_assessed=0, review_comments_fixed=0, review_comments_logged=0
    - Create lists: merged_prs[], skipped_prs[], failed_prs[]
 
 If gh authentication fails, STOP and clearly explain what the user needs to do.
@@ -46,7 +46,7 @@ If gh authentication fails, STOP and clearly explain what the user needs to do.
 
 1. **Fetch all open PRs**:
    ```bash
-   gh pr list --state open --json number,title,headRefName,baseRefName,statusCheckRollup,reviewDecision,isDraft,url,author,mergeStateStatus,mergeable,state
+   gh pr list --state open --json number,title,headRefName,baseRefName,statusCheckRollup,reviewDecision,isDraft,url,author,mergeStateStatus,mergeable,state,reviews,latestReviews
    ```
 
 2. **For each PR, categorize**:
@@ -61,26 +61,28 @@ If gh authentication fails, STOP and clearly explain what the user needs to do.
    | Conflicts | mergeable=CONFLICTING | Skip, warn user |
    | Draft | isDraft=true | Skip |
    | Already Merged | state=MERGED | Log and skip |
+   | Has Review Comments | reviews/latestReviews non-empty OR reviewDecision set | Process in Phase 2 |
 
-3. **Present summary** (informational only, no blocking):
+   > **Note**: "Has Review Comments" is an **overlay** category — a PR can be both "CI Passed" and "Has Review Comments". Phase 2 runs before merging regardless of CI status.
+
+3. **Present summary** (does NOT pause for confirmation):
    ```
    Processing X open PRs...
 
-   | # | Title | Author | Status | Action |
-   |---|-------|--------|--------|--------|
-   | 42 | bump cross-env | dependabot | CI Passed | Will merge |
-   | 35 | bump sharp | dependabot | CI Pending | Will wait |
-   | 32 | bump linting | dependabot | CI Failed | Will auto-fix |
-   | 28 | new feature | user | Draft | Will skip |
-   | 25 | refactor auth | user | Conflicts | Will skip |
+   | # | Title | Author | Status | Reviews | Action |
+   |---|-------|--------|--------|---------|--------|
+   | 42 | bump cross-env | dependabot | CI Passed | - | Will merge |
+   | 35 | bump sharp | dependabot | CI Pending | 2 bot comments | Will wait + assess reviews |
+   | 32 | bump linting | dependabot | CI Failed | - | Will auto-fix |
+   | 28 | new feature | user | Draft | 1 human review | Will skip |
+   | 25 | refactor auth | user | Conflicts | - | Will skip |
    ```
 
-4. **Check for blockers** - ONLY pause if:
-   - There are PRs with merge conflicts (warn user which ones will be skipped)
-   - There are draft PRs (inform user they will be skipped)
-   - All PRs have non-auto-fixable failures
-
-   Otherwise, proceed automatically.
+4. **Log non-processable PRs** (no user prompt):
+   - PRs with merge conflicts → log as skipped
+   - Draft PRs → log as skipped
+   - If ALL PRs are non-processable (conflicts, drafts, non-fixable failures) → inform user and end workflow
+   - Otherwise, proceed automatically with processable PRs.
 
 5. **Sort PRs by priority**:
    1. Infrastructure PRs first (CI/workflow changes)
@@ -90,16 +92,92 @@ If gh authentication fails, STOP and clearly explain what the user needs to do.
 
 ---
 
-## Phase 2: Review Comments Handling
+## Phase 2: Review Comments Handling (Autonomous)
 
-**Note**: This phase only runs if PRs have pending review comments. For batch processing of simple dependency bumps, this phase is typically skipped.
+**Goal**: Assess and auto-fix review comments from ALL sources (bot and human inline comments). No user prompts in this phase.
 
-For PRs with `reviewDecision: CHANGES_REQUESTED`:
+For each PR with review data (reviews/latestReviews non-empty, or reviewDecision set), run the following steps:
 
-1. Fetch review comments
-2. If all comments are trivial (typos, formatting, docstrings) - auto-fix
-3. If comments require logic changes - skip PR and inform user
-4. Push fixes without asking for confirmation
+### Step 1: Fetch All Review Data
+
+GitHub PRs have three distinct comment endpoints. Fetch all three:
+
+```bash
+# Inline review comments (code-level, attached to diff hunks)
+gh api repos/{owner}/{repo}/pulls/{number}/comments --paginate
+
+# Top-level review submissions (APPROVE, CHANGES_REQUESTED, COMMENTED bodies)
+gh api repos/{owner}/{repo}/pulls/{number}/reviews --paginate
+
+# General PR conversation comments (some bots post here instead of inline)
+gh api repos/{owner}/{repo}/issues/{number}/comments --paginate
+```
+
+Never rely on `reviewDecision` alone. If all three return empty arrays, skip to Phase 3 for this PR.
+
+### Step 2: Handle Formal CHANGES_REQUESTED
+
+If `reviewDecision: CHANGES_REQUESTED` AND the reviewer is a human (not a bot) → **auto-skip PR entirely**. Add to `skipped_prs` with reason "human requested changes". This is the only hard stop.
+
+### Step 3: Assess ALL Comments Uniformly
+
+Read the `diff_hunk` context for each comment. Classify into one of four buckets:
+
+**Valid + straightforward** → auto-fix:
+- "Unused import `fs` on line 12" → remove it
+- "Missing null check before accessing `user.name`" → add the guard
+- "Variable `x` should be `userCount`" → rename it
+- "Missing `await` on async call" → add it
+- "Typo: `recieve` → `receive`" → fix it
+
+**Valid + complex** → log, proceed to merge:
+- "Consider refactoring this into a strategy pattern"
+- "This function does too much — split into smaller functions"
+- "Should we add retry logic here?"
+- Any comment phrased as a question requiring design decisions
+- Any suggestion touching multiple files or changing control flow
+
+**Invalid / false positive** → dismiss, log:
+- Bot references code that no longer exists in the current diff
+- Suggestion would introduce a bug or break existing behavior
+- Comment is about a different file/context than the one it's attached to
+
+**Cosmetic only** → auto-fix if single-line, otherwise log:
+- "Add trailing comma" → auto-fix
+- "Reorder imports alphabetically" → auto-fix if simple, log if many files
+
+**Conservative default**: when uncertain, always classify as "valid + complex" (log, don't fix). The cost of logging instead of fixing is near zero. The cost of botching an architectural change is a broken PR.
+
+Bot and human inline comments are treated identically. The only distinction is formal `CHANGES_REQUESTED` (Step 2).
+
+Increment `review_comments_assessed` for each comment processed.
+
+### Step 4: Auto-fix via Sub-agent
+
+For PRs with fixable comments, launch a **Task sub-agent** to apply fixes. This preserves the main workflow's context window for orchestration.
+
+Sub-agent receives:
+- PR number, branch name, repo owner/name
+- List of fixable comments (file path, line number, `diff_hunk`, suggestion text, classification)
+- Instruction: checkout branch, read relevant files, apply fixes, commit as `"fix: address review feedback"`, push
+
+Sub-agent returns: summary of changes made (files modified, comments addressed).
+
+Main workflow waits for sub-agent completion, then marks PR for CI re-check in Phase 3.
+
+Process PRs with fixable comments **sequentially** (one sub-agent at a time). Parallel sub-agents deferred to v2 — multiple git checkouts risk worktree conflicts and harder debugging.
+
+Increment `review_comments_fixed` for each comment addressed by the sub-agent.
+
+### Step 5: Log Remaining Comments
+
+For all non-fixed comments (valid + complex, invalid/dismissed, cosmetic-but-skipped):
+- Record: PR number, comment author, file path, snippet of comment body, classification reason
+- Increment `review_comments_logged` for each
+
+These are included in the Phase 5 final summary.
+
+**No user prompts in this phase. Fully autonomous.**
 
 ---
 
@@ -130,6 +208,19 @@ If `mergeStateStatus=BEHIND`:
 gh api repos/{owner}/{repo}/pulls/{number}/update-branch -X PUT
 ```
 Then wait 30s and re-check CI.
+
+### Step 2b: Rerun vs Update-branch Decision
+
+When CI needs re-triggering, choose the right action:
+
+| Scenario | Action |
+|----------|--------|
+| Branch behind main | `gh api repos/{owner}/{repo}/pulls/{number}/update-branch -X PUT` |
+| Flaky test (same code passed before) | `gh run rerun --failed` |
+| CI workflow changed on main | `update-branch` (picks up new workflow) |
+| Secrets unavailable (Dependabot) | `update-branch` first |
+
+**Rule**: prefer `update-branch` over `rerun` unless confirmed flaky test on an up-to-date branch.
 
 ### Step 3: Wait for CI
 
@@ -288,10 +379,17 @@ RESULTS:
 
 AUTO-FIXES APPLIED:
   - X lint errors fixed automatically
+  - X review comments auto-resolved (from Y assessed)
+  - Z review comments logged (not auto-fixable)
+
+REVIEW COMMENTS LOGGED (not auto-fixed):
+  - PR #35 [codex-bot] src/utils.ts: "Consider extracting to helper" (valid+complex)
+  - PR #35 [codex-bot] src/index.ts: "Stale reference to removed fn" (invalid/dismissed)
 
 REMAINING WORK:
   - PR #25 has merge conflicts at: src/auth.ts
   - PR #20 needs manual fix for type errors
+  - PR #18 skipped: human reviewer formally requested changes
 
 =====================================================
 ```
@@ -303,12 +401,14 @@ REMAINING WORK:
 ### ALWAYS Auto-fix
 - Lint errors (`npm run lint -- --fix`)
 - Formatting errors
+- Review comments (bot or human) assessed as valid + straightforward
 
 ### NEVER Auto-fix
 - Type errors (TypeScript)
 - Test failures
 - Build errors
-- Logic changes in review comments
+- Logic/architectural changes in review comments
+- PRs where a human reviewer formally requested changes (auto-skip entire PR)
 
 ### Branch Safety
 - NEVER use force push
@@ -319,6 +419,14 @@ REMAINING WORK:
 - 30 second polling interval
 - 10 minute max wait per PR
 - 2 max fix attempts before skipping
+
+### Review Comment Handling
+- ALWAYS fetch inline comments via API (never rely solely on `reviewDecision`)
+- NEVER merge a PR where a human formally requested changes (auto-skip)
+- ALWAYS assess ALL comments (bot and human) for validity before applying
+- Treat bot and human inline comments identically — assess, auto-fix if straightforward
+- NEVER prompt the user for review comment decisions
+- ALWAYS log dismissed/skipped comments for the final summary
 
 ### Error Handling
 - "Already merged" is a success, not an error
