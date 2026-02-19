@@ -11,6 +11,7 @@ Claude Code workflow helpers for epic automation, git management, and developer 
 | **Agent Creator** | Design and deploy custom Claude Code agents | Yes |
 | **Designer-Founder** | Transform ideas into dev-ready frontend artifacts | Yes |
 | **Epic Orchestration** | Automate multi-story epic execution with sub-agents | Requires BMAD |
+| **Deep Audit** | Multi-agent codebase audit (security, architecture, performance, etc.) | Yes |
 | **Code Review Agent** | Principal-level code review automation | Requires BMM |
 | **Story Prep Agent** | Convert requirements to developer-ready specs | Requires BMM |
 
@@ -83,6 +84,17 @@ Orchestrates sub-agents to execute all stories in an epic sequentially with mini
 /implement-epic-with-subagents
 ```
 
+#### `/deep-audit`
+
+Multi-agent codebase audit across security, architecture, error handling, and more:
+- 9 specialized audit agents run in parallel
+- Covers security, performance, code health, test coverage, accessibility, and more
+- Generates a consolidated report with prioritized findings
+
+```
+/deep-audit
+```
+
 ### Agents
 
 #### `principal-code-reviewer`
@@ -148,6 +160,7 @@ Some components require the [BMAD Method](https://github.com/bmad-method) workfl
 **Standalone components** (no external dependencies):
 - `/git-cleanup-and-merge`
 - `/plan-parallelization`
+- `/deep-audit`
 - `/agent-creator` skill
 - `/designer-founder` skill
 
@@ -171,11 +184,15 @@ After installation, files are placed in:
     │   ├── STORY-AGENT-TEMPLATE.md
     │   ├── NON-STORY-AGENT-TEMPLATE.md
     │   └── COMMUNITY-REPOS.md
-    └── designer-founder/
-        ├── workflow.md
-        ├── steps/
-        ├── templates/
-        └── tools/
+    ├── designer-founder/
+    │   ├── workflow.md
+    │   ├── steps/
+    │   ├── templates/
+    │   └── tools/
+    └── deep-audit/
+        ├── SKILL.md
+        ├── agents/          # 9 audit agent prompts
+        └── templates/
 ```
 
 ## Uninstallation

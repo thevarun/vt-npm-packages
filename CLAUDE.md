@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| `@torka/claude-workflows` | 0.13.0 | Commands, agents, and skills for epic automation, git management, story execution, and design workflows |
+| `@torka/claude-workflows` | 0.13.1 | Commands, agents, and skills for epic automation, git management, story execution, and design workflows |
 | `@torka/claude-qol` | 0.4.5 | Auto-approve hooks, context monitoring, session analysis, and workflow optimization |
 
 Each package is a standalone npm module in its own subdirectory with independent versioning.
@@ -44,7 +44,7 @@ The install scripts handle:
 
 Protected files (never overwritten):
 - `claude-workflows`: `vt-preferences.md`
-- `claude-qol`: `auto_approve_safe.rules.json`
+- `claude-qol`: `auto_approve_safe.rules.json`, `nash-learnings.md`
 
 ### Directory Structure
 
@@ -87,7 +87,12 @@ vt-spells/
     ├── commands/                # Slash commands (3 markdown files)
     ├── skills/
     │   └── nash/                # Session transcript analysis skill
-    │       └── nash-sources.example.yaml
+    │       ├── SKILL.md
+    │       ├── OPUS-ANALYSIS-PROMPT.md
+    │       ├── prune_transcript.py
+    │       ├── nash-learnings.md
+    │       ├── nash-sources.example.yaml
+    │       └── tmp/             # Temp dir for pruned transcripts
     ├── examples/
     │   └── settings.local.example.json
     ├── install.js

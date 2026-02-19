@@ -13,6 +13,7 @@ Claude Code quality-of-life improvements: auto-approve hooks, context monitoring
 | **Optimize Command** | Analyze auto-approve decisions and refine rules |
 | **Fresh Eyes Review** | Mid-session fresh-eyes review using an Opus subagent |
 | **Docs Quick Update** | Detect code changes and suggest targeted documentation updates |
+| **Nash** | Session transcript analysis to extract learnings and optimize workflows |
 
 ## Installation
 
@@ -241,10 +242,17 @@ After installation, files are placed in:
 │   ├── auto_approve_safe.rules.json
 │   ├── auto_approve_safe_rules_check.py
 │   └── context-monitor.py
-└── commands/
-    ├── optimize-auto-approve-hook.md
-    ├── docs-quick-update.md
-    └── fresh-eyes.md
+├── commands/
+│   ├── optimize-auto-approve-hook.md
+│   ├── docs-quick-update.md
+│   └── fresh-eyes.md
+└── skills/
+    └── nash/
+        ├── SKILL.md
+        ├── OPUS-ANALYSIS-PROMPT.md
+        ├── prune_transcript.py
+        ├── nash-learnings.md
+        └── nash-sources.example.yaml
 ```
 
 ## Uninstallation
@@ -263,6 +271,7 @@ rm -f .claude/scripts/auto_approve_safe.py \
       .claude/commands/optimize-auto-approve-hook.md \
       .claude/commands/docs-quick-update.md \
       .claude/commands/fresh-eyes.md
+rm -rf .claude/skills/nash
 ```
 
 **Note**: Your `settings.local.json` is not modified—you may want to manually remove hook/statusLine configurations.
