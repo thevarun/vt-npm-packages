@@ -161,6 +161,29 @@ Edit `.claude/scripts/auto_approve_safe.rules.json`:
 }
 ```
 
+#### Auto-approving non-Bash tools
+
+The auto-approve hook handles `Bash`, `Read`, `Write`, `Edit`, `Grep`, and `Glob` tools.
+For other tools (WebSearch, WebFetch, MCP tools like Playwright), use Claude Code's
+built-in permission system by adding them to your `settings.local.json`:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch",
+      "mcp__playwright__*",
+      "mcp__context7__*",
+      "mcp__stitch__*"
+    ]
+  }
+}
+```
+
+This is faster than routing through the hook (zero latency) and works for any tool type.
+See `examples/settings.local.example.json` for a complete example.
+
 #### Rules Lint (optional)
 
 Check for invalid, duplicate, or dead patterns in the hook rules:

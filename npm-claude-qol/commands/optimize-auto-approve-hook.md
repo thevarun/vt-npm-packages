@@ -101,6 +101,7 @@ Review all ALLOW decisions and flag potentially unsafe patterns:
 | Recursive delete | `rm -r` or `rm -rf` (should be deny) | HIGH |
 | Sensitive file deletion | `rm` targets .env, .key, credentials, etc. | HIGH |
 | Pipe to shell | `| bash`, `| sh`, `| zsh` | HIGH |
+| Broad allow without deny | Program-head allow (e.g., `^npm\s+`) exists but no deny for dangerous subcommands | MEDIUM |
 
 **Output format:**
 ```
@@ -113,6 +114,12 @@ POTENTIAL UNSAFE ALLOWS
 [MEDIUM] Command: curl https://example.com/script.sh
          Reason: Network command allowed but URL could vary
          Recommendation: Review if URL should be restricted
+
+DENY COVERAGE GAPS
+==================
+[MEDIUM] Broad allow: "^npm\\s+\\S+(\\s+.*)?$"
+         Missing deny for: npm publish, npm unpublish
+         Recommendation: Add "^npm\\s+(publish|unpublish)\\b" to deny_patterns
 ```
 
 ### Phase 3: Analyze DENY Decisions (Check for False Positives)
@@ -167,6 +174,18 @@ Example artifacts to detect:
 - reason segment starts with a lowercase word that isn't a known command
 - reason contains a jq-style filter fragment (e.g., `.[] | .path`)
 
+**Pre-filter: Redirect-Suffix Artifacts**
+
+Before analyzing ASK decisions, identify entries where the command would match an
+allow pattern if `2>&1`, `2>/dev/null`, or trailing `&` were stripped. These are now
+auto-resolved by `strip_safe_suffixes()` and require no pattern changes. Report count
+but skip from analysis.
+
+Example artifacts to detect:
+- Command ends with `2>&1` or `2>/dev/null`
+- Command ends with `&` (backgrounding)
+- Same command without suffix matches an existing allow pattern
+
 **Process each unique ASK pattern:**
 1. Count occurrences
 2. Check all criteria
@@ -175,14 +194,15 @@ Example artifacts to detect:
 
 **Pattern Generation Heuristics:**
 
-| Observed Pattern | Generated Regex | Notes |
-|-----------------|-----------------|-------|
-| `npx tsx script.ts` | `^npx\\s+tsx\\s+[^\\|;&]+$` | No pipes or chains |
-| `npm run custom-script` | `^npm\\s+run\\s+[\\w-]+$` | Word chars and hyphen only |
-| `cat package.json` | Already covered by existing rules | Skip |
-| `vercel ls` | `^(npx\\s+)?vercel\\s+(ls\|...)(\\s+...)?$` | Enumerate safe subcommands |
-| `rm single-file.txt` | `^rm\\s+(?!.*-r)[\\w.@-]+$` | No path separators, no recursive |
-| `npx drizzle-kit generate` | `^npx\\s+(--yes\\s+)?drizzle-kit\\s+...$` | Enumerate safe subcommands |
+| Observed Pattern | Action | Notes |
+|-----------------|--------|-------|
+| `npm run custom-script` | Already covered | Broad npm allow handles all npm subcommands |
+| `git stash pop` | Already covered | Broad git allow handles all git subcommands |
+| `npx tsx script.ts` | Add to npx allowlist | npx requires explicit package allowlisting |
+| `docker compose up` | Add to docker allow | Docker operational commands need explicit allow |
+| `node -e "code"` | Skip (leave as ask) | Inline execution stays as ask by design |
+| `python3 -c "code"` | Skip (leave as ask) | Inline execution stays as ask by design |
+| `vercel ls` | Add allow pattern | New program not yet in allowlist |
 
 **Output format:**
 ```
@@ -210,13 +230,18 @@ all existing deny_patterns. If a deny pattern would match the same commands:
 - Either: drop the recommendation, OR suggest a deny pattern carve-out if safe
 - Never recommend an allow pattern that would be entirely blocked by deny
 
-First, display the splitter fix impact (from pre-filtered entries in Phase 4):
+First, display the splitter fix impact and redirect-suffix fix impact (from pre-filtered entries in Phase 4):
 
 ```
 SPLITTER FIX IMPACT
 ====================
 {N} ASK entries were caused by the old quote-splitting bug.
 These are now automatically resolved and require no pattern changes.
+
+REDIRECT-SUFFIX FIX IMPACT
+===========================
+{N} ASK entries were caused by redirect suffixes (2>&1, 2>/dev/null).
+These are now automatically resolved by strip_safe_suffixes() and require no pattern changes.
 ```
 
 Then display a structured summary of all recommendations:
@@ -240,6 +265,10 @@ DENY PATTERNS TO FIX:
 
 SENSITIVE PATHS TO ADD:
 [ ] None identified
+
+DENY PATTERNS TO ADD:
+[ ] 1. "^npm\\s+(publish|unpublish)\\b"
+       Reason: Broad npm allow covers these; need explicit deny for registry operations
 
 WARNINGS (Manual Review Needed):
 ! 2 potentially unsafe ALLOW decisions detected
@@ -361,7 +390,7 @@ Next Steps:
 2. **NEVER remove deny patterns** without explicit warning that this could allow dangerous commands
 3. **NEVER add patterns that match outside the project directory**
 4. **Validate all regex patterns** before writing to ensure they're syntactically correct
-5. **Prefer specific patterns** over broad ones (e.g., `^npm run build$` over `^npm run .*$`)
+5. **For programs with broad allows (git, npm, yarn, pnpm), recommend deny patterns** for dangerous subcommands rather than more allow patterns. For programs without broad allows (npx, docker, node), prefer specific allow patterns.
 6. **Always provide revert instructions** so user can undo changes easily
 7. **Back up before modifying** - Read the file content before editing so it can be restored if needed
 8. **Check rm targets against sensitive_paths** - Never recommend auto-allowing rm commands that could target .env, .key, credentials, or other sensitive files

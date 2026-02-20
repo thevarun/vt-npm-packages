@@ -1,108 +1,97 @@
 {
-  "_doc_allow": "Groups: system info, file reading, version checks, git, node/npm/yarn/pnpm, python, rust/go, search/text tools, network (read-only + localhost), filesystem, github CLI, process management, background tasks, CLI tools (vercel/drizzle/next), image inspection, non-recursive rm",
-  "_doc_deny": "Blocks: privilege escalation, destructive rm, system modification, fork bombs, pipe-to-shell, mass kill, xargs rm, netcat, crontab",
+  "_doc_allow": "Broad program-head allows + specific deny patterns for safety. Redirect suffixes (2>&1, 2>/dev/null) handled by strip_safe_suffixes() in the hook.",
+  "_doc_deny": "Blocks: privilege escalation, destructive rm, system modification, fork bombs, pipe-to-shell, mass kill, xargs rm, netcat, crontab, npm registry ops, git history destruction, npx arbitrary exec",
   "_doc_sensitive": "Protects: env files, crypto keys, SSH, cloud credentials, package registry configs, secrets/tokens, Docker/K8s configs",
 
   "allow_patterns": [
+    "_comment: system info",
     "^(pwd|whoami|date)$",
     "^uname(\\s+-a)?$",
     "^which\\s+\\S+$",
     "^echo\\s+[^|;&]+$",
 
-    "^(cat|head|tail|wc|less|file|stat|du|df)\\s+[^|;&]+$",
-    "^ls(\\s+.*)?$",
-    "^tree(\\s+.*)?$",
+    "_comment: file inspection (sensitive path check still gates reads)",
+    "^(cat|head|tail|wc|less|file|stat|du|df|xxd)\\s+[^|;&]+$",
+    "^(ls|tree)(\\s+.*)?$",
 
-    "^(python(3)?|node|npm|pnpm|yarn|uv)\\s+--version$",
+    "_comment: version checks",
+    "^(python3?|node|npm|pnpm|yarn|uv|docker|cargo|go)\\s+--?version$",
 
-    "^git\\s+-C\\s+[^|;&]+\\s+(status|diff|log|show|branch|add|commit|checkout|fetch|pull|push)(\\s+.*)?$",
-    "^git\\s+(status|diff|log|show|branch|remote|add|commit|checkout|fetch|pull|push|worktree|merge|rebase|tag|switch|restore|rev-parse|ls-files|check-ignore|update-index|stash\\s+(list|push|pop|drop|apply))(\\s+.*)?$",
-    "^git\\s+rm\\s+[^|;&]+$",
-    "^git\\s+rev-list\\s+[^|;&]+$",
-    "^git\\s+ls-tree\\s+[^|;&]+\\s*\\|\\s*(grep|head|tail|wc)[^|;&]*$",
-    "^git\\s+commit\\s+-m\\s+\"\\$\\(cat\\s+<<'?EOF'?",
-    "^git\\s+stash(\\s+--include-untracked|\\s+--all|\\s+-u|\\s+-a)?(\\s+-m\\s+.*)?$",
+    "_comment: git — broad allow (deny patterns catch force-push, clean, etc)",
+    "^git\\s+-C\\s+[^|;&]+\\s+\\S+(\\s+.*)?$",
+    "^git\\s+\\S+(\\s+.*)?$",
 
-    "^pnpm\\s+(test|run\\s+(test|lint|typecheck|type-check|check|build|dev|start)|install|i|add|remove)(\\s+.*)?$",
-    "^npm\\s+(test|install|i|ci)(\\s+.*)?$",
-    "^npm\\s+run\\s+[\\w:-]+(\\s+[^|;&]*)?(\\s*2>&1)?(\\s*&)?$",
-    "^npm\\s+whoami$",
-    "^npm\\s+list(\\s+(-g|--global))?(\\s+[\\w@/-]+)?$",
-    "^npm\\s+ls(\\s+[\\w@/-]+)*$",
-    "^npm\\s+view\\s+[\\w@/-]+(\\s+.*)?$",
-    "^npm\\s+pack\\s+[\\w@/-]+\\s+--dry-run",
-    "^npm\\s+(info|show)\\s+[@\\w/-]+(\\s+[\\w.]+)?(\\s+2>&1)?$",
-    "^npm\\s+config\\s+(get|list)(\\s+[\\w.-]+)?(\\s+2>/dev/null)?$",
-    "^yarn\\s+(test|lint|typecheck|type-check|check|build|dev|start|install|add|remove)(\\s+.*)?$",
-    "^npx\\s+(tsc|eslint|prettier|vitest|jest)(\\s+.*)?$",
-    "^npx\\s+shadcn@latest\\s+(add|init)(\\s+[\\w@/-]+)*(\\s+--yes)?(\\s+2>&1)?$",
-    "^npx\\s+tsx\\s+[^|;&]+$",
-    "^npx\\s+next\\s+(build|dev|start|lint)(\\s+.*)?$",
-    "^npx\\s+(--yes\\s+)?drizzle-kit\\s+(generate|push|studio)(\\s+--[\\w-]+(\\s+[\\w._-]+)*)*(\\s*2>&1)?$",
+    "_comment: npm/pnpm/yarn — broad allow (deny patterns catch publish, etc)",
+    "^npm\\s+\\S+(\\s+.*)?$",
+    "^pnpm\\s+\\S+(\\s+.*)?$",
+    "^yarn\\s+\\S+(\\s+.*)?$",
+
+    "_comment: npx — known-safe packages only (unknown packages fall to ask)",
+    "^npx\\s+(tsc|eslint|prettier|vitest|jest|tsx|next|drizzle-kit|playwright|skills)(\\s+.*)?$",
+    "^npx\\s+shadcn(@latest)?\\s+(add|init|diff)(\\s+.*)?$",
+    "^npx\\s+(--yes\\s+)?create-next-app(@latest)?\\s+.*$",
     "^npx\\s+(--yes\\s+)?semantic-release\\s+--dry-run[^|;&]*$",
+    "^npx\\s+supabase\\s+.*$",
     "^(PORT=\\d+\\s+)?npx\\s+playwright\\s+(test|install)\\b",
 
-    "^pytest(\\s+.*)?$",
-    "^python(3)?\\s+-m\\s+pytest(\\s+.*)?$",
-    "^uv\\s+run\\s+(pytest|python|ruff|mypy)(\\s+.*)?$",
-    "^ruff\\s+(check|format)(\\s+.*)?$",
-    "^mypy(\\s+.*)?$",
+    "_comment: node — require file path (node -e falls to ask)",
+    "^node\\s+(?!-)[\\w/.@-]+(\\.m?[jt]s)?(\\s+[^|;&]*)?$",
+
+    "_comment: python — specific safe invocations (python -c falls to ask)",
+    "^python3?\\s+-m\\s+(pytest|venv|http\\.server)(\\s+.*)?$",
+    "^(pytest|ruff|mypy)(\\s+.*)?$",
     "^black\\s+--check(\\s+.*)?$",
     "^isort\\s+--check(\\s+.*)?$",
-    "^pip\\s+(list|show|freeze)$",
-    "^uv\\s+(pip\\s+list|pip\\s+show|sync|lock)(\\s+.*)?$",
+    "^uv\\s+(run|pip|sync|lock)(\\s+.*)?$",
+    "^pip\\s+(list|show|freeze|install)(\\s+.*)?$",
+    "^\\.?\\/?\\.?venv/bin/(python3?|pip|ruff|pytest|mypy|black|isort|uvicorn)(\\s+.*)?$",
 
-    "^cargo\\s+(check|test|clippy|fmt\\s+--check|build)(\\s+.*)?$",
+    "_comment: rust/go",
+    "^cargo\\s+(check|test|clippy|fmt|build)(\\s+.*)?$",
     "^go\\s+(test|vet|fmt|build)(\\s+.*)?$",
 
-    "^(jq|grep|rg|fd|ag|awk|cut|tr|diff|comm)\\s+[^|;&]+$",
+    "_comment: search/text tools",
+    "^(jq|grep|rg|fd|ag|awk|cut|tr|diff|comm|sort|uniq)\\s+[^|;&]+$",
     "^find\\s+(?!.*-exec)[^|;&]+$",
     "^sed\\s+-n\\s+[^|;&]+$",
-    "^(sort|uniq)(\\s+.*)?$",
+    "^xargs\\s+(grep|rg|cat|head|tail|wc|ls|file|stat)(\\s+[^|;&]*)?$",
 
+    "_comment: image inspection",
     "^(sips|identify)\\s+[^|;&]+$",
 
+    "_comment: network (read-only + localhost)",
     "^curl\\s+.*--head",
     "^curl\\s+-I\\s+",
-    "^ping\\s+-c\\s+\\d+\\s+",
-    "^(dig|nslookup|host)\\s+",
-
-    "^mkdir(\\s+.*)?$",
-    "^touch\\s+[^|;&]+$",
-    "^(cp|mv)\\s+[^|;&]+$",
-    "^rmdir\\s+[^|;&]+$",
-    "^rm\\s+(?!.*(-r\\b|-rf\\b|-fr\\b|--recursive))[\\w.@-]+(\\s+[\\w.@-]+)*$",
-
-    "^(npx\\s+)?vercel\\s+(ls|list|inspect|logs|whoami|env\\s+ls|project|--version|deployments)(\\s+[^|;&]*)?$",
-
-    "^gh\\s+(pr|issue|repo|release|workflow|run|api|auth)(\\s+.*)?$",
-    "^npm\\s+update\\s+[@\\w/-]+$",
-
-    "^sleep\\s+[0-9.]+$",
-
-    "^chmod\\s+[0-6][0-7][0-7]\\s+[^|;&]+$",
-
-    "^lsof\\s+(-[a-zA-Z]+\\s+)*-?i\\s*[:\\d]+",
-    "^lsof\\s+-ti:\\d+(\\s+2>/dev/null)?$",
-    "^npm\\s+run\\s+clean(\\s+.*)?$",
-    "^npm\\s+(dedupe|cache\\s+clean)(\\s+.*)?$",
-
-    "^curl\\s+(-[a-zA-Z]+\\s+)*https?://localhost[:/][^|;&]*(\\s*2>&1)?(\\s*2>/dev/null)?$",
+    "^(ping|dig|nslookup|host)\\s+",
+    "^curl\\s+(-[a-zA-Z]+\\s+)*https?://localhost[:/][^|;&]*$",
     "^curl\\s+-X\\s+(POST|GET|PUT|DELETE)\\s+['\"]?https?://localhost[:/][^|;&]*$",
-    "^curl\\s+-s\\s+-o\\s+/dev/null\\s+-w\\s+[^|;&]*https?://localhost[^|;&]*$",
     "^curl\\s+-s\\s+-o\\s+/dev/null\\s+-w\\s+[^|;&]*https?://[^|;&]*$",
 
+    "_comment: filesystem",
+    "^(mkdir|touch|cp|mv|rmdir)(\\s+.*)?$",
+    "^chmod\\s+[0-6][0-7][0-7]\\s+[^|;&]+$",
+    "^rm\\s+(?!.*(-r\\b|-rf\\b|-fr\\b|--recursive))[\\w.@-]+(\\s+[\\w.@-]+)*$",
+
+    "_comment: docker — read-only only (run/exec/build fall to ask)",
+    "^docker\\s+(ps|info|images|logs|inspect|port|top|stats)(\\s+[^|;&]*)?$",
+    "^docker\\s+(network|volume)\\s+ls(\\s+[^|;&]*)?$",
+    "^docker\\s+compose\\s+(ps|logs|config)(\\s+[^|;&]*)?$",
+
+    "_comment: github CLI — broad allow",
+    "^gh\\s+(pr|issue|repo|release|workflow|run|api|auth)(\\s+.*)?$",
+
+    "_comment: process management",
+    "^lsof\\s+(-[a-zA-Z]+\\s+)*-?i\\s*:?[\\d,:-]+",
+    "^lsof\\s+-ti\\s*:?\\d+([,-]\\d+)*$",
     "^pgrep\\s+[^|;&]+$",
     "^ps\\s+aux.*$",
+    "^sleep\\s+[0-9.]+$",
+    "^kill\\s+\\d+(\\s+\\d+)*$",
+    "^kill\\s+\\$\\(lsof\\s+-ti\\s*:?\\d+([,-]\\d+)*\\)$",
 
-    "^npm\\s+run\\s+dev(\\s+--\\s+-p\\s+\\d+)?\\s*(>\\s*(/tmp/[^|;&]+|/dev/null)\\s+)?2>&1\\s*&$",
-
+    "_comment: misc",
     "^test\\s+-[dfeL]\\s+[^|;&]+$",
-
-    "^xxd\\s+[^|;&]+$",
-
-    "^npm\\s+uninstall(\\s+[\\w@/-]+)+$",
-    "^kill\\s+\\d+(\\s+\\d+)*$"
+    "^npm\\s+run\\s+dev(\\s+--\\s+-p\\s+\\d+)?\\s*(>\\s*(/tmp/[^|;&]+|/dev/null)\\s+)?2>&1\\s*&$"
   ],
 
   "deny_patterns": [
@@ -131,7 +120,19 @@
     "\\bkillall\\b",
     "\\bxargs\\b.*\\brm\\b",
     "\\b(nc|ncat|netcat)\\b",
-    "\\bcrontab\\s+-[er]"
+    "\\bcrontab\\s+-[er]",
+
+    "_comment: npm registry operations",
+    "^npm\\s+(publish|unpublish|deprecate|owner|access|dist-tag)\\b",
+
+    "_comment: git history destruction",
+    "^git\\s+push\\s+.*--force",
+    "^git\\s+push\\s+--delete\\b",
+    "^git\\s+reflog\\s+expire\\b",
+    "^git\\s+clean\\s+.*-[a-z]*[fd]",
+
+    "_comment: npx arbitrary execution",
+    "^npx\\s+.*--exec\\b"
   ],
 
   "sensitive_paths": [

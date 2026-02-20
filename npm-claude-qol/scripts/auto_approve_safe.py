@@ -150,7 +150,7 @@ def split_compound_shell_command(command: str) -> list[str]:
                 i += 2
                 continue
             # Check for ; or |
-            if ch in (';', '|'):
+            if ch in (';', '|', '\n'):
                 seg = ''.join(current).strip()
                 if seg:
                     segments.append(seg)
@@ -168,13 +168,31 @@ def split_compound_shell_command(command: str) -> list[str]:
 
 
 def is_shell_file_read_command(command: str) -> bool:
-    """Detect common shell file-read commands that could exfiltrate secrets."""
-    return bool(re.search(r"^\s*(cat|head|tail|less)\b", command or "", re.IGNORECASE))
+    """Detect shell file-read commands that could exfiltrate secrets.
+    Excludes write/redirect patterns (cat > file, cat << EOF)."""
+    cmd = (command or "").strip()
+    if not re.search(r"^\s*(cat|head|tail|less)\b", cmd, re.IGNORECASE):
+        return False
+    # If > >> or << appears anywhere, it's a redirect/heredoc, not a read
+    if re.search(r"\s(>|>>|<<)\s", cmd):
+        return False
+    return True
 
 
 def is_shell_destructive_command(command: str) -> bool:
     """Detect shell commands that delete/overwrite files."""
     return bool(re.search(r"^\s*(rm|mv|>\s*)\b", command or "", re.IGNORECASE))
+
+
+_SAFE_SUFFIX_RE = re.compile(
+    r"(?:\s+2>&1|\s+2>/dev/null|\s+>/dev/null|\s+&>/dev/null|\s+2>&-)*"
+    r"(?:\s+&)?\s*$"
+)
+
+
+def strip_safe_suffixes(segment: str) -> str:
+    """Remove harmless redirections/backgrounding before allowlist matching."""
+    return _SAFE_SUFFIX_RE.sub("", segment).rstrip()
 
 
 def summarize_tool_input(tool_name: str, tool_input: dict) -> dict:
@@ -269,12 +287,23 @@ def make_decision(tool_name: str, tool_input: dict, rules: dict) -> tuple[str, s
             r"^[A-Za-z_][A-Za-z0-9_]*=.*$",  # bare var assignment
             r"^(true|false)$",
             r"^#.*$",  # shell comments
+            r"^cat\s+/(?:private/)?tmp/claude-\d+/[^\s;|&]+$",  # Claude temp files
+            r"^source\s+\S+$",
+            r"^echo\s*('([^']*)'|\"([^\"]*)\")?\s*$",  # simple echo
+            r"^wait(\s+\d+)*$",
+            r"^command\s+-v\s+\S+$",  # POSIX which
+            r"^printf\s+[^|;&]+$",
         ]
 
         for seg in segments:
+            seg_stripped = strip_safe_suffixes(seg)
             if matches_any_pattern(seg, rules["allow_patterns"]):
                 continue
+            if seg_stripped != seg and matches_any_pattern(seg_stripped, rules["allow_patterns"]):
+                continue
             if matches_any_pattern(seg, glue_allow_patterns):
+                continue
+            if seg_stripped != seg and matches_any_pattern(seg_stripped, glue_allow_patterns):
                 continue
             return "ask", f"Command not in allowlist: {seg}"
 

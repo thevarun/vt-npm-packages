@@ -10,7 +10,11 @@
       "Bash(gh repo:*)",
       "Bash(npm test:*)",
       "Bash(npm run:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch",
+      "mcp__playwright__*",
+      "mcp__context7__*",
+      "mcp__stitch__*"
     ],
     "deny": [],
     "ask": []
