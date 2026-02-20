@@ -8,7 +8,6 @@ Claude Code quality-of-life improvements: auto-approve hooks, context monitoring
 |---------|-------------|
 | **Auto-Approve Hook** | Intelligent command auto-approval for solo dev workflows |
 | **Context Monitor** | Real-time context usage status line with visual indicators |
-| **Auto-Format Hook** | Run linters/formatters automatically after file edits |
 | **Completion Notifications** | Desktop notifications + sound when tasks complete |
 | **Optimize Command** | Analyze auto-approve decisions and refine rules |
 | **Fresh Eyes Review** | Mid-session fresh-eyes review using an Opus subagent |
@@ -32,6 +31,16 @@ npm install -g @torka/claude-qol
 The installer automatically copies files to your `.claude/` directory:
 - **Project-level**: Files go to `<project>/.claude/`
 - **Global**: Files go to `~/.claude/`
+
+## Recommended Placement
+
+Some features work best at user-level (`~/.claude/settings.json`), while others are project-specific:
+
+| Feature | Recommended Level | Why |
+|---------|------------------|-----|
+| **Status Line** | User-level | Universally useful; gracefully degrades (no git = no branch shown). Projects can override. |
+| **Notifications** | User-level | You always want to know when tasks finish. Don't also define at project level — hooks stack, causing double notifications. |
+| **Auto-Approve Hook** | Project-level | Rules are project-specific. Uses `$CLAUDE_PROJECT_DIR` to find rules file. |
 
 ## Post-Installation Setup
 
@@ -72,54 +81,29 @@ Add to your `.claude/settings.local.json`:
 
 This shows a real-time context usage bar with percentage and warnings.
 
-### 3. Auto-Format on Edit (optional)
-
-Auto-run linters and formatters after file edits:
-
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.js || \"$CLAUDE_TOOL_FILE_PATH\" == *.ts || \"$CLAUDE_TOOL_FILE_PATH\" == *.jsx || \"$CLAUDE_TOOL_FILE_PATH\" == *.tsx ]]; then npx eslint \"$CLAUDE_TOOL_FILE_PATH\" --fix 2>/dev/null || true; elif [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.py ]]; then pylint \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null || true; fi"
-          },
-          {
-            "type": "command",
-            "command": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.js || \"$CLAUDE_TOOL_FILE_PATH\" == *.ts || \"$CLAUDE_TOOL_FILE_PATH\" == *.jsx || \"$CLAUDE_TOOL_FILE_PATH\" == *.tsx || \"$CLAUDE_TOOL_FILE_PATH\" == *.json || \"$CLAUDE_TOOL_FILE_PATH\" == *.css || \"$CLAUDE_TOOL_FILE_PATH\" == *.html ]]; then npx prettier --write \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null || true; elif [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.py ]]; then black \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null || true; elif [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.go ]]; then gofmt -w \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null || true; fi"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Supported languages:**
-- JavaScript/TypeScript: ESLint + Prettier
-- Python: Pylint + Black
-- Go: gofmt
-- Rust: rustfmt
-- PHP: php-cs-fixer
-
-### 4. Completion Notifications (recommended)
+### 3. Completion Notifications (recommended)
 
 Get notified when Claude Code finishes a task:
 
 ```json
 {
   "hooks": {
+
     "Stop": [
       {
         "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Tool: Operation completed\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' \"Tool: $CLAUDE_TOOL_NAME completed\"; fi"
-          },
+            "command": "afplay /System/Library/Sounds/Glass.aiff"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "*",
+        "hooks": [
           {
             "type": "command",
             "command": "afplay /System/Library/Sounds/Glass.aiff"
