@@ -1,0 +1,54 @@
+# Auto-maintained by weekly-analyst. Manual edits will be preserved on merge.
+last_updated: "2026-02-23"
+
+user:
+  name: Varun Torka
+  role: solopreneur
+  description: "Solo developer building multiple SaaS products, apps, and games"
+
+projects:
+  vt-saas-template:
+    description: "SaaS template product"
+    last_active: "2026-02-23"
+    activity_level: high
+    notes: "Primary active project. Multiple epics (7-10) with worktree parallelization."
+  vt-spells:
+    description: "Claude Code toolkit — @torka/claude-workflows and @torka/claude-qol npm packages"
+    last_active: "2026-02-23"
+    activity_level: high
+  ContentFlow:
+    description: "Content management/pipeline application"
+    last_active: null
+    activity_level: unknown
+  FamilyTree:
+    description: "Family tree application"
+    last_active: null
+    activity_level: unknown
+  FinResearch:
+    description: "Financial research tool"
+    last_active: null
+    activity_level: unknown
+  Investabot:
+    description: "Investment bot/assistant"
+    last_active: null
+    activity_level: unknown
+  PerspectivesAI:
+    description: "AI perspectives application"
+    last_active: null
+    activity_level: unknown
+  vt-design-studio:
+    description: "Design studio tool"
+    last_active: null
+    activity_level: unknown
+  vt-npm-packages:
+    description: "NPM package management"
+    last_active: null
+    activity_level: unknown
+
+workflow_preferences:
+  preferred_commands: []
+  common_patterns: []
+  observed_frustrations: []
+
+tool_usage:
+  most_used: []
