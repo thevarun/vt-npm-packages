@@ -1,3 +1,46 @@
 # Auto-maintained by weekly-analyst.
 last_updated: "2026-02-23"
-suggestions: []
+suggestions:
+  - id: "2026-W09-001"
+    title: "Reduce orchestrator context overhead for fix-audit-findings"
+    priority: HIGH
+    effort: Moderate
+    target: "vt-saas-template fix-audit-findings workflow"
+    status: open
+    created: "2026-W09"
+    last_checked: "2026-W09"
+    evidence_weeks: ["2026-W09"]
+    description: "Create resume checkpoint mechanism to avoid re-reading full workflow/step files on session resume. Generate condensed execution brief from sidecar state."
+
+  - id: "2026-W09-002"
+    title: "Implement proactive /compact before context fills"
+    priority: MEDIUM
+    effort: Simple
+    target: "vt-saas-template CLAUDE.md"
+    status: open
+    created: "2026-W09"
+    last_checked: "2026-W09"
+    evidence_weeks: ["2026-W09"]
+    description: "Add guidance to CLAUDE.md to prefer /compact over /clear and compact proactively at 70% capacity."
+
+  - id: "2026-W09-003"
+    title: "Add .claudeignore to vt-saas-template"
+    priority: MEDIUM
+    effort: Simple
+    target: "vt-saas-template project config"
+    status: open
+    created: "2026-W09"
+    last_checked: "2026-W09"
+    evidence_weeks: ["2026-W09"]
+    description: "Exclude _bmad-output/enrichment/, node_modules/, dist/ from automatic context indexing."
+
+  - id: "2026-W09-004"
+    title: "Track enrichment subagent turn counts for optimization"
+    priority: LOW
+    effort: Moderate
+    target: "vt-saas-template fix-audit-findings step-03"
+    status: open
+    created: "2026-W09"
+    last_checked: "2026-W09"
+    evidence_weeks: ["2026-W09"]
+    description: "Add post-completion analysis of enrichment turn counts to identify themes that took excessive turns and suggest prompt improvements."

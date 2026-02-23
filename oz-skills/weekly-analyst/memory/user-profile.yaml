@@ -11,11 +11,12 @@ projects:
     description: "SaaS template product"
     last_active: "2026-02-23"
     activity_level: high
-    notes: "Primary active project. Multiple epics (7-10) with worktree parallelization."
+    notes: "Primary active project. Currently running deep-audit → fix-audit-findings pipeline with 14 refactoring themes across 4 phases. Uses BMAD workflow architecture with step-file discipline and subagent orchestration."
   vt-spells:
-    description: "Claude Code toolkit — @torka/claude-workflows and @torka/claude-qol npm packages"
+    description: "Claude Code toolkit — @torka/claude-workflows and @torka/claude-qol npm packages, oz-skills"
     last_active: "2026-02-23"
     activity_level: high
+    notes: "Building weekly-analyst infrastructure including claude-sessions-sync repo for automated session data collection."
   ContentFlow:
     description: "Content management/pipeline application"
     last_active: null
@@ -46,9 +47,28 @@ projects:
     activity_level: unknown
 
 workflow_preferences:
-  preferred_commands: []
-  common_patterns: []
-  observed_frustrations: []
+  preferred_commands:
+    - "/fix-audit-findings"
+    - "/deep-audit"
+    - "/bmad:bmb:agents:workflow-builder"
+    - "/bmad:bmb:workflows:workflow-compliance-check"
+    - "/plan"
+    - "/clear"
+  common_patterns:
+    - "BMAD step-file architecture with sequential enforcement"
+    - "Risk-based autonomy model (LOW/MEDIUM/HIGH) for subagent execution"
+    - "Sidecar YAML state tracking for multi-session workflows"
+    - "Frequent /clear at session start before launching workflows"
+    - "Minimal user interaction during execution — mostly 'C' (Continue) confirmations"
+  observed_frustrations:
+    - "Context overhead from re-reading workflow/step files on resume"
+    - "Multiple sessions needed for long-running audit-fix pipeline"
 
 tool_usage:
-  most_used: []
+  most_used:
+    - "Read (107 calls)"
+    - "Edit (87 calls)"
+    - "Bash (64 calls)"
+    - "Task (43 calls)"
+    - "Glob (23 calls)"
+    - "Write (23 calls)"
