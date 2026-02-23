@@ -56,7 +56,7 @@ vt-spells/
 │   ├── .claude-plugin/
 │   │   └── plugin.json          # Plugin manifest (commands, agents, skills, hooks, statusLine)
 │   ├── commands/                # Slash commands (7 markdown files)
-│   ├── agents/                  # Agent definitions (4 markdown files)
+│   ├── agents/                  # Agent definitions (3 markdown files)
 │   ├── skills/
 │   │   ├── agent-creator/       # Sub-agent creation skill
 │   │   │   └── expertise/       # Domain expertise profiles
@@ -67,10 +67,13 @@ vt-spells/
 │   │   ├── product-architect/   # PRD + Architecture skill
 │   │   │   ├── agents/          # PM and Architect agent definitions
 │   │   │   └── references/      # Escalation guide
-│   │   └── deep-audit/          # Multi-agent codebase audit
-│   │       ├── agents/          # 11 audit agent prompt files (incl. consolidate-and-triage)
-│   │       ├── shared-agent-instructions.md  # Output format, confidence rules, tool guidelines
-│   │       └── templates/       # Report, findings, agent-output, and state templates
+│   │   ├── deep-audit/          # Multi-agent codebase audit
+│   │   │   ├── agents/          # 11 audit agent prompt files (incl. consolidate-and-triage)
+│   │   │   ├── shared-agent-instructions.md  # Output format, confidence rules, tool guidelines
+│   │   │   └── templates/       # Report, findings, agent-output, state, and theme-generator templates
+│   │   └── fix-audit-findings/  # Execute refactoring themes from deep-audit
+│   │       ├── steps/           # 4-step workflow (plan, continue, execute, complete)
+│   │       └── templates/       # Enrichment, implementation, fix, and theme-generator prompts
 │   ├── bmad-workflows/          # BMAD Method integration
 │   ├── examples/
 │   │   └── settings.local.example.json
@@ -132,7 +135,7 @@ vt-spells/
 | `/fresh-eyes` | qol | Mid-session fresh-eyes review using an Opus subagent | Standalone |
 | `/update-self` | _(repo-local)_ | Scan upstream deps for staleness, propose changes | Not distributed |
 
-**Skills (5)**
+**Skills (6)**
 
 | Skill | Package | Description | Dependencies |
 |-------|---------|-------------|--------------|
@@ -140,16 +143,16 @@ vt-spells/
 | `/designer-founder` | workflows | Transform ideas into dev-ready frontend artifacts (multi-step) | Standalone |
 | `/product-architect` | workflows | Agent team (PM + Architect) creates PRD + Architecture from notes | BMAD Method |
 | `/deep-audit` | workflows | Multi-agent codebase audit with finding triage and theme-based reporting. Supports `--agent <name>` for single-agent runs. Serena MCP-aware. | Standalone |
+| `/fix-audit-findings` | workflows | Execute refactoring themes from a deep-audit with sub-agent orchestration | Standalone (reads `_bmad-output/deep-audit/`) |
 | `/nash` | qol | Review session transcripts to extract learnings and improve workflows | `~/.claude/nash-sources.yaml` |
 
-**Agents (4)**
+**Agents (3)**
 
 | Agent | Package | Description | Dependencies |
 |-------|---------|-------------|--------------|
 | `principal-code-reviewer` | workflows | Expert-level code review after completing stories | BMAD Method workflows |
 | `story-prep-master` | workflows | Create, refine, prepare user stories for development | BMAD Method workflows |
 | `desk-check-gate` | workflows | Visual quality gate for UI stories (blocks on major issues) | Standalone |
-| `refactoring-planner` | workflows | Synthesize deep-audit findings into refactoring roadmap with themes and execution order | Standalone (reads `_bmad-output/deep-audit/findings.md`) |
 
 **Scripts/Hooks (4)**
 

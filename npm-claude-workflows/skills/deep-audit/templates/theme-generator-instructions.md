@@ -1,43 +1,8 @@
-# Refactoring Planner
+# Theme Generation Instructions
 
-You are a **principal software architect and tech lead** specializing in incremental refactoring strategy. You receive the complete set of deduplicated audit findings from a multi-agent codebase audit and synthesize them into an actionable refactoring roadmap.
+Instructions for grouping audit findings into structured refactoring themes and determining execution order. Read this file when generating the "Refactoring Plan" section of the deep-audit report.
 
-You do NOT review code directly. Your input is the findings produced by other agents. Your job is synthesis, prioritization, and sequencing.
-
-## Startup
-
-On startup, automatically read `_bmad-output/deep-audit/findings.md`. If this file does not exist, print the following message and stop:
-
-```
-No findings file found at _bmad-output/deep-audit/findings.md
-
-Run /deep-audit first to generate audit findings, then invoke @refactoring-planner.
-```
-
-## Your Input
-
-You will receive deduplicated findings in this format:
-
-```
-=== FINDING ===
-id: F-NNN
-agent: <name>
-severity: P1|P2|P3
-confidence: <80-100>
-file: <relative file path>
-line: <line number or range>
-dimension: <dimension name>
-title: <one-line>
-description: |
-  <2-4 sentences>
-suggestion: |
-  <specific fix>
-=== END FINDING ===
-```
-
-## What You Must Produce
-
-### Step 1: Identify Refactoring Themes
+## Step 1: Identify Refactoring Themes
 
 Group related findings into themes. A theme is a coherent refactoring effort that addresses multiple findings together. Name themes for the **outcome**, not the problem (e.g., "Consolidate Auth Middleware" not "Auth Issues").
 
@@ -47,10 +12,11 @@ Guidelines for grouping:
 - Findings across dimensions that require the same code changes → same theme
 - A finding may belong to multiple themes (list it in both)
 - Singleton findings that don't group → create a theme with one finding
+- Themes are **cross-severity** — a single theme may contain P1, P2, and P3 findings if they relate to the same area
 
 Aim for 3-8 themes. Fewer than 3 means the grouping is too coarse. More than 8 means it is too granular.
 
-### Step 2: Analyze Each Theme
+## Step 2: Analyze Each Theme
 
 For each theme, determine:
 1. **Summary**: What is wrong and what is the combined impact? Reference specific finding IDs.
@@ -71,7 +37,7 @@ For each theme, determine:
    - `WIDE` (11+ external consumers)
    Consider: if 3 files are changed but 40 modules import them, the blast radius is WIDE.
 
-### Step 3: Determine Execution Order
+## Step 3: Determine Execution Order
 
 Assign each theme to a phase:
 - **Phase 1**: Safe refactors (LOW risk, no dependencies). Builds confidence and reduces noise.
@@ -81,7 +47,7 @@ Assign each theme to a phase:
 
 Within each phase, order by: highest impact first, then lowest effort.
 
-### Step 3.5: Validate Against Anti-Patterns
+## Step 3.5: Validate Against Anti-Patterns
 
 Before finalizing, check each theme against these common refactoring anti-patterns. Add a `warnings` field listing any that apply (or "None"):
 
@@ -89,18 +55,18 @@ Before finalizing, check each theme against these common refactoring anti-patter
 - **"Refactoring without test safety net"**: `coverage_gate` is REQUIRED and no test-writing step exists (should not happen if Step 2.8 is followed, but acts as a double-check)
 - **"Mixed concerns — separate structural changes from behavior changes"**: Theme steps include both structural refactoring (rename, move, extract) AND behavior changes (new logic, changed business rules)
 
-### Step 4: Flag Quick Wins
+## Step 4: Flag Quick Wins
 
 Identify themes (or individual steps within themes) that meet ALL of:
 - Effort: S
 - Risk: LOW
 - Addresses at least one P1 or P2 finding
 
-## Output Format
+## Output Formats
 
-Produce output using these exact block formats. Produce NO other output besides these blocks.
+### THEME Block
 
-### Theme Block
+Produce one block per theme using this exact format:
 
 ```
 === THEME ===
@@ -131,7 +97,7 @@ tests_after: |
 === END THEME ===
 ```
 
-### Execution Order Block
+### EXECUTION ORDER Block
 
 Exactly one of these, after all THEME blocks:
 
@@ -152,16 +118,16 @@ summary: |
 ## Documentation Health Findings — Special Handling
 
 Documentation Health findings MUST NOT be grouped into regular refactoring themes. Instead:
-1. After generating all code-focused themes (Phases 1-4), add a single summary note in the EXECUTION ORDER block
-2. Classify the overall doc update scope as MAJOR (missing core docs, significant restructuring needed) or MINOR (stale references, small gaps, incremental updates)
+1. After generating all code-focused themes (Phases 1-4), add a summary note in the EXECUTION ORDER block
+2. Classify the overall doc update scope as MAJOR or MINOR
 3. In the EXECUTION ORDER `summary` field, append: "Documentation: [MAJOR|MINOR] update recommended after completing all code changes. Run /docs-quick-update to sync docs with refactored code, then address remaining gaps from Documentation Health findings [list finding IDs]."
-4. Do NOT create THEME blocks for documentation findings — they should be addressed AFTER all code refactoring is complete so docs reflect the final codebase state
+4. Do NOT create THEME blocks for documentation findings
 5. Documentation Health finding IDs still count toward "every finding ID must appear" — satisfy this by listing them in the EXECUTION ORDER summary
 
 ## Important Rules
 
 - Assign sequential IDs: T-001, T-002, T-003, ...
-- Every finding ID from the input MUST appear in at least one theme
+- Every finding ID from the input MUST appear in at least one theme (or in the Documentation Health note)
 - Do NOT invent findings that were not in the input
 - Do NOT suggest refactoring areas that have no associated findings
 - If there is only 1 finding, produce 1 theme with 1 phase

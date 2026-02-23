@@ -1,0 +1,45 @@
+# Audit Fix Sidecar State
+# Created by step-01-plan, read/updated by step-01b, step-02, step-03
+# Lean tracker — enrichment lives in refactoring-plan.md, not here
+
+started_at: "{timestamp}"
+last_updated: "{timestamp}"
+
+git:
+  branch: "refactor/audit-fix-{date}"
+  base: "main"
+
+baseline_validation: "pass|fail"
+
+current_phase: 1        # 1-4 during execution, "complete" when done
+current_theme: null      # T-XXX while executing, null between themes
+
+themes_completed: []
+themes_pending: []       # Ordered list of theme IDs to execute
+themes_skipped: []       # {id, reason} entries
+themes_failed: []        # {id, reason} entries
+
+execution_plan:
+  phase_1: []
+  phase_2: []
+  phase_3: []
+  phase_4: []
+
+execution_log: []
+# Each entry:
+#   - theme: "T-XXX"
+#     name: "Theme Name"
+#     phase: 1
+#     risk: LOW|MEDIUM|HIGH
+#     findings_addressed: ["F-001", "F-002"]
+#     files_changed: ["src/path/file.ts"]
+#     validation: pass|fail
+#     visual_check: pass|fail|N/A
+#     commit: "abc123f"
+#     enrichment_turns: 0     # tool_uses from enrichment sub-agent
+#     implementation_turns: 0  # tool_uses from implementation sub-agent
+#     fix_turns: 0             # tool_uses from fix sub-agent(s), 0 if none
+#     completed_at: "{timestamp}"
+
+# Set by step-03 on completion:
+# completed_at: "{timestamp}"

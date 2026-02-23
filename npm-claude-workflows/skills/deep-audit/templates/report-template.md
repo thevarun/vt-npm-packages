@@ -127,7 +127,7 @@ No findings above the confidence threshold. The codebase looks healthy across al
 
 ## Next Steps
 
-Run `@refactoring-planner` to synthesize accepted findings into an actionable refactoring roadmap with themes, phases, and execution order.
+Run `/fix-audit-findings` to execute the refactoring themes phase-by-phase.
 
 ## Statistics
 
@@ -148,3 +148,13 @@ Run `@refactoring-planner` to synthesize accepted findings into an actionable re
 | Agent | Findings | P1 | P2 | P3 | Dimensions |
 |-------|--------:|---:|---:|---:|------------|
 {{AGENT_BREAKDOWN_ROWS}}
+
+## Refactoring Plan
+
+<!-- Structured theme data for machine consumption by /fix-audit-findings.
+     Generated using cross-severity grouping — a single theme may contain
+     P1, P2, and P3 findings if they relate to the same area. -->
+
+{{THEME_BLOCKS}}
+
+{{EXECUTION_ORDER_BLOCK}}

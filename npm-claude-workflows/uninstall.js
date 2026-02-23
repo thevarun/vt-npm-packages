@@ -48,7 +48,6 @@ const INSTALLED_FILES = {
     'principal-code-reviewer.md',
     'story-prep-master.md',
     'desk-check-gate.md',
-    'refactoring-planner.md',
   ],
   'skills/agent-creator': [
     'SKILL.md',
@@ -127,6 +126,24 @@ const INSTALLED_FILES = {
     'agent-output.md',
     'findings.md',
     'state.json.template',
+    'theme-generator-instructions.md',
+  ],
+  'skills/fix-audit-findings': [
+    'SKILL.md',
+    'sidecar-template.yaml',
+  ],
+  'skills/fix-audit-findings/steps': [
+    'step-01-plan.md',
+    'step-01b-continue.md',
+    'step-02-execute.md',
+    'step-03-complete.md',
+  ],
+  'skills/fix-audit-findings/templates': [
+    'theme-generator-prompt.md',
+    'enrichment-prompt.md',
+    'enrichment-output-template.md',
+    'implementation-prompt.md',
+    'fix-prompt.md',
   ],
 };
 
@@ -307,6 +324,9 @@ function uninstall() {
     'skills/deep-audit/templates',
     'skills/deep-audit/agents',
     'skills/deep-audit',
+    'skills/fix-audit-findings/templates',
+    'skills/fix-audit-findings/steps',
+    'skills/fix-audit-findings',
   ];
   for (const skillSubDir of skillDirs) {
     const dirPath = path.join(targetBase, skillSubDir);

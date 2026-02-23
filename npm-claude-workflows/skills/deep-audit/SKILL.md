@@ -335,42 +335,44 @@ Spawn a dedicated subagent with a fresh context window. The orchestrator does NO
 
 ---
 
-## Phase 6: Generate Report (subagent)
+## Phase 6: Generate Themes + Report (subagent)
 
-Spawn a dedicated report generation subagent with a fresh context window. The orchestrator does NOT generate the report itself.
+Spawn a dedicated subagent with a fresh context window to perform two tasks in sequence: generate structured refactoring themes, then produce the final report incorporating those themes. The orchestrator does NOT generate themes or the report itself.
 
 1. Read the report template from `skills/deep-audit/templates/report-template.md`
-2. Spawn via Task tool:
+2. Read the theme generation instructions from `skills/deep-audit/templates/theme-generator-instructions.md`
+3. Spawn via Task tool:
    ```
    Tool: Task
    subagent_type: general-purpose
    model: opus
-   description: "deep-audit: generate-report"
+   description: "deep-audit: themes-and-report"
    prompt: |
-     You are the report generation agent for a multi-agent codebase audit. Your job is to read the consolidated findings and produce the final user-facing report.
+     You are the report generation agent for a multi-agent codebase audit. You have TWO tasks: first generate structured refactoring themes from the findings, then produce the final user-facing report that includes those themes.
 
-     ## Input
+     ## Task 1 — Generate Refactoring Themes
 
      1. Read the consolidated findings from: `_bmad-output/deep-audit/findings.md`
-     2. Read the report template from: `skills/deep-audit/templates/report-template.md` — it contains both the template structure AND the scoring reference (weights and score-to-label mapping) in HTML comments at the top
+     2. Read the theme generation instructions from: `skills/deep-audit/templates/theme-generator-instructions.md`
+     3. Following those instructions, group ALL accepted findings into cross-severity structured themes
+     4. Generate the THEME blocks and EXECUTION ORDER block (exact formats are in the instructions file)
+     5. Hold these blocks in memory for Task 2
 
-     ## Instructions
+     ## Task 2 — Generate Report
+
+     1. Read the report template from: `skills/deep-audit/templates/report-template.md` — it contains both the template structure AND the scoring reference (weights and score-to-label mapping) in HTML comments at the top
+     2. Read `_bmad-output/deep-audit/state.json` for mode, scope, start_time, detected_stack, start_commit, and agent list
 
      Fill in the report template:
 
      1. **Header fields**: date, mode, scope description, agent count, detected stack, duration, commit hash
-        - Read `_bmad-output/deep-audit/state.json` for mode, scope, start_time, detected_stack, start_commit, and agent list
 
      2. **Scorecard**: Build from DIMENSION SUMMARY data in findings.md
         - For each dimension: fill in score, P1/P2/P3 counts, assessment
         - Calculate overall health score using the weighted formula in the scoring reference comment
         - Map overall score to label using the score table in the scoring reference comment
 
-     3. **Findings sections**: Group ACCEPTED findings into implementation themes
-        - Same file(s) → same theme
-        - Same dimension + same root cause → same theme
-        - Logically related changes → same theme
-        - Name themes for the outcome (e.g., "Harden Auth Middleware", "Reduce Bundle Size")
+     3. **Findings sections**: Use the themes you generated in Task 1 to organize findings
         - Structure: top-level = P1/P2/P3 sections, within each severity = findings grouped by theme
         - Render each finding using the Finding Detail Template in the report template
 
@@ -378,9 +380,11 @@ Spawn a dedicated report generation subagent with a fresh context window. The or
 
      5. **Invalid Findings appendix**: Copy from findings.md Invalid Findings table
 
-     6. **Next Steps**: Keep as-is (point to @refactoring-planner)
+     6. **Next Steps**: Keep as-is (point to /fix-audit-findings)
 
      7. **Statistics**: Total findings, per-severity counts, agent count, dimension count, per-agent breakdown table
+
+     8. **Refactoring Plan section**: Append the THEME blocks and EXECUTION ORDER block from Task 1 into the `## Refactoring Plan` section at the end of the report
 
      ## Output
 
@@ -394,8 +398,9 @@ Spawn a dedicated report generation subagent with a fresh context window. The or
 
 3. After the subagent completes:
    - Capture the report path from its output
+   - Read the report and parse THEME block IDs/names, populate `state.json.themes[]`
    - Update state.json with `report_path`
-   - Print: `[Phase 6 complete: report written]`
+   - Print: `[Phase 6 complete: themes generated + report written]`
 
 ---
 
@@ -443,7 +448,7 @@ Report: <report_path>
 Findings: _bmad-output/deep-audit/findings.md
 State:  _bmad-output/deep-audit/state.json
 
-Suggest: Run @refactoring-planner for execution plan
+Suggest: Run /fix-audit-findings to execute refactoring themes
 ═══════════════════════════════════════════════════
 ```
 

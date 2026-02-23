@@ -32,10 +32,6 @@
     {
       "name": "desk-check-gate",
       "description": "Visual quality gate for UI stories — blocks on major issues"
-    },
-    {
-      "name": "refactoring-planner",
-      "description": "Synthesize deep-audit findings into an actionable refactoring roadmap with themes and execution order"
     }
   ],
   "skills": [
@@ -50,6 +46,10 @@
     {
       "name": "deep-audit",
       "description": "Multi-agent codebase audit across security, architecture, error handling, and more"
+    },
+    {
+      "name": "fix-audit-findings",
+      "description": "Execute refactoring themes from a deep-audit with sub-agent orchestration"
     }
   ],
   "hooks": {

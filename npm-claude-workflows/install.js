@@ -212,11 +212,11 @@ function install() {
     'agents/principal-code-reviewer.md',
     'agents/story-prep-master.md',
     'agents/desk-check-gate.md',
-    'agents/refactoring-planner.md',
     'skills/agent-creator/',
     'skills/designer-founder/',
     'skills/product-architect/',
     'skills/deep-audit/',
+    'skills/fix-audit-findings/',
     '*.backup',
   ];
   const addedCount = ensureGitignoreEntries(
@@ -267,6 +267,7 @@ function install() {
     { old: 'skills/deep-audit/agents/finding-triage.md', renamed: 'consolidate-and-triage.md' },
     { old: 'skills/deep-audit/templates/shared-agent-instructions.md', renamed: 'shared-agent-instructions.md (moved to skill root)' },
     { old: 'skills/deep-audit/templates/triage.md', renamed: 'findings.md (merged)' },
+    { old: 'agents/refactoring-planner.md', renamed: 'absorbed into deep-audit + fix-audit-findings' },
   ];
   for (const { old: oldFile, renamed } of migrations) {
     const oldPath = path.join(targetBase, oldFile);
@@ -342,7 +343,8 @@ function install() {
   log('   ✓ agent-creator skill (with expertise profiles)');
   log('   ✓ designer-founder skill');
   log('   ✓ product-architect skill (requires Agent Teams + BMAD)');
-  log('   ✓ desk-check-gate agent\n');
+  log('   ✓ desk-check-gate agent');
+  log('   ✓ fix-audit-findings skill\n');
 }
 
 /**
