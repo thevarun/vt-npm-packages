@@ -1,0 +1,16 @@
+# Auto-maintained by knowledge-curator.
+# Ground truth of what's in the notebook and why.
+last_updated: "2026-02-23"
+notebook_id: "d2338bf8-5505-4f3c-96f0-07a060bd4486"
+
+# Source entries are populated on first run by auditing the notebook.
+# Format:
+#   - source_id: "abc123..."
+#     title: "Source Title"
+#     url: "https://..."
+#     category: agent-patterns  # See SKILL.md for categories
+#     added_by: agent | user
+#     added_date: "2026-02-23"
+#     eval_score: 16  # /20, only for agent-added
+#     reason: "Why this source was added"
+sources: []

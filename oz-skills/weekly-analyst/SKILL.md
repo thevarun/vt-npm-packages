@@ -169,22 +169,28 @@ Search for external inspiration relevant to observed patterns.
 
 1. Read `memory/research-library.yaml` to see what's been researched before. Use this as a starting point, not a stopping point — even for familiar topics, search again for updates.
 
-2. For each significant pattern or friction point from phases 5-6, search the web:
+2. **Query the Agentic Engineering notebook** for curated knowledge relevant to observed patterns. The knowledge-curator skill maintains a high-quality notebook with up to 40 vetted sources on agentic engineering. Use the NLM CLI to ask it targeted questions:
+   ```bash
+   nlm notebook query d2338bf8-5505-4f3c-96f0-07a060bd4486 "What best practices or techniques exist for {observed pattern or friction point}?"
+   ```
+   This gives you access to curated, high-quality references without additional web searching. If `nlm` is not available or auth fails, skip this step and rely on web search.
+
+3. For each significant pattern or friction point from phases 5-6, search the web:
    - If context limits are recurring: search for "Claude Code context management", "reducing LLM context usage", etc.
    - If a specific tool/workflow has friction: search for alternatives, best practices, community discussions
    - If the user is doing something manually: search for automation tools or techniques
    - Search for new Claude Code features, updates, or community workflows
    - Search for productivity techniques relevant to observed work patterns
 
-3. **Err on the side of more research, not less.** Cast a wide net, then curate.
+4. **Err on the side of more research, not less.** Cast a wide net, then curate.
 
-4. **Update `memory/research-library.yaml`:**
+5. **Update `memory/research-library.yaml`:**
    - Add new resources with key takeaways, source URL, and what pattern triggered the discovery
    - Mark outdated entries as `relevance: outdated`
    - Revise takeaways if understanding has evolved
    - Link resources to improvement-backlog suggestion IDs where applicable
 
-5. **Quality gate**: Only include research findings in the report that directly address an observed pattern. No generic "best practices" padding.
+6. **Quality gate**: Only include research findings in the report that directly address an observed pattern. No generic "best practices" padding.
 
 ### Phase 8: INNOVATE
 

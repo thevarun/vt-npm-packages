@@ -77,27 +77,41 @@ vt-spells/
 │   ├── install.js
 │   └── uninstall.js
 │
-└── npm-claude-qol/              # @torka/claude-qol
-    ├── .claude-plugin/
-    │   └── plugin.json          # Plugin manifest (commands, skills)
-    ├── scripts/
-    │   ├── auto_approve_safe.py           # PreToolUse auto-approve hook
-    │   ├── auto_approve_safe.rules.json   # User-customizable approve rules
-    │   ├── auto_approve_safe_rules_check.py  # Rules linter/validator
-    │   └── context-monitor.py             # Status line script
-    ├── commands/                # Slash commands (3 markdown files)
-    ├── skills/
-    │   └── nash/                # Session transcript analysis skill
-    │       ├── SKILL.md
-    │       ├── OPUS-ANALYSIS-PROMPT.md
-    │       ├── prune_transcript.py
-    │       ├── nash-learnings.md
-    │       ├── nash-sources.example.yaml
-    │       └── tmp/             # Temp dir for pruned transcripts
-    ├── examples/
-    │   └── settings.local.example.json
-    ├── install.js
-    └── uninstall.js
+├── npm-claude-qol/              # @torka/claude-qol
+│   ├── .claude-plugin/
+│   │   └── plugin.json          # Plugin manifest (commands, skills)
+│   ├── scripts/
+│   │   ├── auto_approve_safe.py           # PreToolUse auto-approve hook
+│   │   ├── auto_approve_safe.rules.json   # User-customizable approve rules
+│   │   ├── auto_approve_safe_rules_check.py  # Rules linter/validator
+│   │   └── context-monitor.py             # Status line script
+│   ├── commands/                # Slash commands (3 markdown files)
+│   ├── skills/
+│   │   └── nash/                # Session transcript analysis skill
+│   │       ├── SKILL.md
+│   │       ├── OPUS-ANALYSIS-PROMPT.md
+│   │       ├── prune_transcript.py
+│   │       ├── nash-learnings.md
+│   │       ├── nash-sources.example.yaml
+│   │       └── tmp/             # Temp dir for pruned transcripts
+│   ├── examples/
+│   │   └── settings.local.example.json
+│   ├── install.js
+│   └── uninstall.js
+│
+└── oz-skills/                   # Autonomous Warp Oz skills (not npm-distributed)
+    ├── weekly-analyst/          # Weekly session analysis + improvement reports
+    │   ├── SKILL.md             # 11-phase autonomous workflow
+    │   ├── analysis-framework.md
+    │   ├── scripts/             # extract_sessions.py, summarize_session.py, prune_transcript.py
+    │   ├── templates/           # weekly-report.md template
+    │   ├── memory/              # Persistent learnings (user-profile, insights, backlog, digests)
+    │   └── reports/             # Weekly analysis output
+    ├── knowledge-curator/       # Weekly NotebookLM curation
+    │   ├── SKILL.md             # 10-phase workflow with 20-min budget
+    │   └── memory/              # source-registry.yaml, curation-log.md
+    └── nlm-skill/               # NotebookLM CLI reference
+        └── SKILL.md
 ```
 
 ### Component Inventory
@@ -145,6 +159,14 @@ vt-spells/
 | `auto_approve_safe.rules.json` | qol | User-customizable rules for auto-approve (protected file) |
 | `auto_approve_safe_rules_check.py` | qol | Linter/validator for rules.json |
 | `context-monitor.py` | qol | Status line: real-time context usage with color-coded warnings |
+
+**Oz Skills (3)** — Autonomous skills that run on Warp Oz (cloud), not distributed via npm
+
+| Skill | Schedule | Description |
+|-------|----------|-------------|
+| `weekly-analyst` | Weekly (Mon 10 AM) | Analyzes Claude Code session data, detects patterns/friction, researches improvements, produces reports with persistent memory |
+| `knowledge-curator` | Weekly | Maintains Agentic Engineering NotebookLM notebook — researches sources, evaluates quality, manages 40-source limit |
+| `nlm-skill` | Reference only | NotebookLM CLI usage rules and command reference (not an autonomous skill) |
 
 ### Cross-Package Dependencies
 
