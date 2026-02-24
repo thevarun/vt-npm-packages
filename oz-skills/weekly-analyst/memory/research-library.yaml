@@ -2,4 +2,36 @@
 # Curated knowledge base of external resources and findings.
 # Entries can be added, revised, or marked outdated each run.
 last_updated: "2026-02-23"
-entries: []
+entries:
+  - id: "R-001"
+    topic: "Claude Code context management"
+    source: "https://mcpcat.io/guides/managing-claude-code-context/"
+    relevance: active
+    triggered_by: "Frequent /clear usage and context pressure in fix-audit-findings sessions"
+    takeaways:
+      - "Proactive compaction at 70% capacity produces higher quality output than waiting for auto-compact"
+      - "Session state files (markdown summaries) enable clean resume without full context re-read"
+      - "Subagents preserve main context by isolating exploration in separate context windows"
+    related_suggestions: ["2026-W09-002"]
+
+  - id: "R-002"
+    topic: "Subagent orchestration patterns"
+    source: "https://code.claude.com/docs/en/sub-agents"
+    relevance: active
+    triggered_by: "Heavy Task tool usage for theme execution in fix-audit-findings"
+    takeaways:
+      - "Custom subagents with restricted tools prevent accidental state corruption"
+      - "Subagent results returning to main context can consume significant context — consider agent teams for sustained parallelism"
+      - "Tradeoff: custom subagents gatekeep context but ensure focused execution"
+    related_suggestions: ["2026-W09-001"]
+
+  - id: "R-003"
+    topic: "Context optimization via lazy loading"
+    source: "https://gist.github.com/johnlindquist/849b813e76039a908d962b2f0923dc9a"
+    relevance: active
+    triggered_by: "Large step-file consumption in orchestrator context"
+    takeaways:
+      - "54% reduction in initial context by switching from verbose docs to trigger-based routing"
+      - "Key insight: Claude doesn't need verbose documentation upfront — it needs triggers to know when to load detailed context"
+      - "Lazy loading for skills/protocols: list triggers in CLAUDE.md, load full protocol on demand"
+    related_suggestions: ["2026-W09-001"]
