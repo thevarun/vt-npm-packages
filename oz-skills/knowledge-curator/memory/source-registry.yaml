@@ -1,16 +1,291 @@
 # Auto-maintained by knowledge-curator.
 # Ground truth of what's in the notebook and why.
-last_updated: "2026-02-23"
+last_updated: "2026-03-01"
 notebook_id: "d2338bf8-5505-4f3c-96f0-07a060bd4486"
 
-# Source entries are populated on first run by auditing the notebook.
-# Format:
-#   - source_id: "abc123..."
-#     title: "Source Title"
-#     url: "https://..."
-#     category: agent-patterns  # See SKILL.md for categories
-#     added_by: agent | user
-#     added_date: "2026-02-23"
-#     eval_score: 16  # /20, only for agent-added
-#     reason: "Why this source was added"
-sources: []
+sources:
+  # === agent-patterns (12 sources, 36%) ===
+  - source_id: "feaf9cb6-842c-4274-b56e-4e76ab1b20d1"
+    title: "AutoGen vs CrewAI vs LangGraph 2026 Comparison Guide"
+    url: "https://python.plainenglish.io/autogen-vs-crewai-vs-langgraph-2026-comparison-guide-fd8490397977"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Multi-agent framework comparison"
+
+  - source_id: "3ab72589-ff96-4936-899f-47184928b0ca"
+    title: "Evaluating AI Agents: Real-world Lessons from Amazon"
+    url: "https://aws.amazon.com/blogs/machine-learning/evaluating-ai-agents-real-world-lessons-from-building-agentic-systems-at-amazon/"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Enterprise-level agent evaluation framework"
+
+  - source_id: "4b6d44f0-bf7c-4bfa-879e-dee3da9324ec"
+    title: "AgentSys"
+    url: "https://github.com/avifenesh/agentsys?tab=readme-ov-file"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Agent system framework and patterns"
+
+  - source_id: "c8716c7d-b0be-490c-8483-9521d7f92124"
+    title: "The 2026 Guide to Agentic Workflow Architectures"
+    url: "https://www.stack-ai.com/blog/the-2026-guide-to-agentic-workflow-architectures"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Conceptual taxonomy of agent architectures"
+
+  - source_id: "639a3833-b42d-4707-9a92-c09514fe4606"
+    title: "Agents Documentation (wshobson)"
+    url: "https://github.com/wshobson/agents/blob/main/docs/agents.md"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Agent design patterns documentation"
+
+  - source_id: "8d0b14be-138d-425d-8a9d-6bae85062aab"
+    title: "Agents Plugins Quick Start"
+    url: "https://github.com/wshobson/agents/blob/main/docs/plugins.md#quick-start---essential-plugins"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Plugin-based agent patterns"
+
+  - source_id: "43379856-916b-42a8-b700-f80bb0c2d531"
+    title: "AgentSys Audit Project Plugin Agents"
+    url: "https://github.com/avifenesh/agentsys/blob/main/docs/reference/AGENTS.md#audit-project-plugin-agents"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Agent auditing patterns"
+
+  - source_id: "45488ddc-1ebd-418d-a941-adddc132063b"
+    title: "AgentSys SLOP Patterns"
+    url: "https://github.com/avifenesh/agentsys/blob/main/docs/reference/SLOP-PATTERNS.md"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Anti-patterns and quality patterns for agent output"
+
+  - source_id: "2b3536fb-026c-4f94-a07a-17d27d30a7b2"
+    title: "AgentSys SHIP Workflow"
+    url: "https://github.com/avifenesh/agentsys/blob/main/docs/workflows/SHIP.md"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Shipping workflow for agent-assisted development"
+
+  - source_id: "b04b04cb-6d74-46e8-8427-7ca56f4799f1"
+    title: "AgentSys Deslop Skill"
+    url: "https://github.com/avifenesh/agentsys/blob/main/plugins/deslop/skills/deslop/SKILL.md"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "De-slopping agent output quality"
+
+  - source_id: "5fe636c7-3391-4a51-9fd1-a7ca43146c54"
+    title: "AgentSys Enhance Plugin"
+    url: "https://github.com/avifenesh/agentsys/tree/main/plugins/enhance"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Agent output enhancement patterns"
+
+  - source_id: "c4cec45d-a1eb-4ad7-b7cb-8ed37f526e7a"
+    title: "AgentSys Overview (DeepWiki)"
+    url: "https://deepwiki.com/avifenesh/agentsys"
+    category: agent-patterns
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "High-level AgentSys documentation overview"
+
+  # === claude-code (7 sources, 21%) ===
+  - source_id: "e947700d-cd0c-4459-b738-3feaf1281f9d"
+    title: "Everything Claude Code - Agent Reference"
+    url: "https://deepwiki.com/affaan-m/everything-claude-code/5-agent-reference"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Claude Code agent capabilities reference"
+
+  - source_id: "d4943d9f-404a-4722-ba48-14bbebd386eb"
+    title: "Beyond Vibe Coding (Addy Osmani)"
+    url: "https://beyond.addy.ie/"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Context engineering and AI-assisted development best practices"
+
+  - source_id: "99b90a82-7e7e-41ea-9504-e9ca5e99dbfd"
+    title: "Claude Code Prompt Library"
+    url: "https://www.aipromptlibrary.app/blog/claude-code-prompt-library"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "40+ ready-to-use Claude Code prompt templates"
+
+  - source_id: "b6985666-d79b-498f-aac8-a8d2e35df4b9"
+    title: "Claude Code Agents"
+    url: "https://github.com/undeadlist/claude-code-agents"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Claude Code agent configurations and protocols"
+
+  - source_id: "4f355508-c5dc-49a5-8f8e-d75fa1940d4e"
+    title: "Everything Claude Code"
+    url: "https://deepwiki.com/affaan-m/everything-claude-code"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Comprehensive Claude Code documentation"
+
+  - source_id: "9e9bde69-8bc1-42c4-8925-a33b9fea7651"
+    title: "Claude Code Agents Directory"
+    url: "https://github.com/undeadlist/claude-code-agents/tree/main/.claude/agents"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Agent configurations for Claude Code"
+
+  - source_id: "684aa5c5-8472-4539-b71f-897669cee92f"
+    title: "Claude Code Full Audit Workflow"
+    url: "https://github.com/undeadlist/claude-code-agents/blob/main/workflows/full-audit.md"
+    category: claude-code
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Complete audit workflow using Claude Code"
+
+  # === emerging (6 sources, 18%) ===
+  - source_id: "ec2cf83b-ab12-41b1-b952-3b69a1f31c73"
+    title: "AI MCP Skills Directory"
+    url: "https://www.aimcp.info/en/skills"
+    category: emerging
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "MCP skills ecosystem directory"
+
+  - source_id: "c0302fb5-4089-4f77-b38a-eb162c05b9ab"
+    title: "Compound Engineering Plugin"
+    url: "https://deepwiki.com/EveryInc/compound-engineering-plugin"
+    category: emerging
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Compound engineering patterns"
+
+  - source_id: "f821ccf7-647d-4d34-955e-3ad30f5c62ed"
+    title: "NotebookLM MCP CLI"
+    url: "https://github.com/jacob-bd/notebooklm-mcp-cli"
+    category: emerging
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "NotebookLM CLI integration"
+
+  - source_id: "84922cbb-73ef-48a3-80f7-4b627b99d673"
+    title: "NotebookLM MCP"
+    url: "https://github.com/roomi-fields/notebooklm-mcp"
+    category: emerging
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "NotebookLM MCP server"
+
+  - source_id: "e59c6de4-2215-4356-a2d6-3a117f9d142c"
+    title: "Skill Codex"
+    url: "https://github.com/skills-directory/skill-codex"
+    category: emerging
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Skills directory and codex patterns"
+
+  - source_id: "76ad4fac-569e-49cc-8d5f-37571e7c2e7e"
+    title: "AI MCP Info"
+    url: "https://www.aimcp.info/en"
+    category: emerging
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "MCP ecosystem overview"
+
+  # === productivity (3 sources, 9%) ===
+  - source_id: "eb0e6732-72a3-4c38-b673-f39cef8c1e23"
+    title: "Warp Cloud Agents Overview"
+    url: "https://docs.warp.dev/agent-platform/cloud-agents/overview"
+    category: productivity
+    added_by: pre-existing
+    added_date: "2026-02-23"
+    reason: "Cloud agent platform for automated workflows"
+
+  - source_id: "2cd8f576-6905-409d-b7f2-7b47e6f5aa31"
+    title: "Unlocking Speed with Solo Developer AI Tools: Top Picks for 2026"
+    url: "https://www.builtthisweek.com/blog/solo-developer-ai-tools-top-picks-2026"
+    category: productivity
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 15
+    reason: "Solo developer productivity tools roundup — fills productivity gap"
+
+  - source_id: "c33a8e7c-c33a-4091-a1c8-3f5c7b025be7"
+    title: "The New Way to Build a SaaS in 2026 With AI Coding Tools"
+    url: "https://www.saasrise.com/blog/the-new-way-to-build-a-saas-in-2026-with-ai-coding-tools"
+    category: productivity
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 18
+    reason: "Modern SaaS building workflow with Claude Code — fills productivity + solopreneur gap"
+
+  # === solopreneur (1 source, 3%) ===
+  - source_id: "85094666-3d39-4f62-a592-33fef8e21686"
+    title: "Solopreneur Guide to Scaling: AI Tools & Strategies for 2026"
+    url: "https://entrepreneurloop.com/solopreneur-guide-to-scaling-2026/"
+    category: solopreneur
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 18
+    reason: "AI-powered solopreneur scaling strategies — fills solopreneur gap"
+
+  # === testing-qa (3 sources, 9%) ===
+  - source_id: "5b96a470-8f85-4b78-9bc9-03620a70daae"
+    title: "12 AI Test Automation Tools QA Teams Actually Use in 2026"
+    url: "https://testguild.com/7-innovative-ai-test-automation-tools-future-third-wave/"
+    category: testing-qa
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 16
+    reason: "Practical AI testing tools review — fills testing-qa gap"
+
+  - source_id: "94145efa-7bfe-4ca4-8024-92277d3e2a1e"
+    title: "Can AI help me write tests on legacy code?"
+    url: "https://understandlegacycode.com/blog/can-ai-write-tests-on-legacy-code/"
+    category: testing-qa
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 16
+    reason: "Practical guide on AI-assisted testing for legacy code — fills testing-qa gap"
+
+  - source_id: "4b8e25ca-e45b-496a-a793-ae29008ae079"
+    title: "Optimizing Solo AI Startup Performance with AI-Powered Testing Tools"
+    url: "https://www.nucamp.co/blog/solo-ai-tech-entrepreneur-2025-optimizing-solo-ai-startup-performance-with-aipowered-testing-tools"
+    category: testing-qa
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 16
+    reason: "AI testing tools for solo developers — fills testing-qa + solopreneur intersection"
+
+  # === marketing-growth (1 source, 3%) ===
+  - source_id: "dd2900e5-c33b-4f0a-9e86-2dd876b684fd"
+    title: "SaaS Marketing Trends 2026: What High-Growth Teams Must Know"
+    url: "https://disruptiveadvertising.com/blog/marketing/saas-marketing-trends-for-2026/"
+    category: marketing-growth
+    added_by: agent
+    added_date: "2026-03-01"
+    eval_score: 17
+    reason: "2026 SaaS marketing trends including AEO, PLG, and AI automation — fills marketing-growth gap"
+
+# Removed sources log:
+removed:
+  - source_id: "48358879-dbed-43a7-881f-260e41931274"
+    title: "5 Vibe Coding Trends You Can't Afford to Miss in 2026"
+    url: "https://www.vibecodingacademy.ai/blog/vibe-coding-news-2026"
+    removed_date: "2026-03-01"
+    reason: "Broken source — notebook AI confirmed it contains no substantive information (just a loading placeholder)"
